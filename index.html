@@ -1,0 +1,2525 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indra Learning Hub | Premium Experience</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & Outfit -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Outfit', 'sans-serif']
+                    },
+                    colors: {
+                        indra: {
+                            navy: '#002B49',
+                            cyan: '#00A1C9',
+                            light: '#F8FAFC',
+                            accent: '#E0F2FE',
+                            dark: '#0F172A'
+                        }
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.5s ease-out',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(15px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Smooth Scrolling e Ocultação da SPA */
+        html { scroll-behavior: smooth; }
+        .view-section { display: none; opacity: 0; }
+        .view-section.active { display: block; animation: fadeInUp 0.4s forwards; }
+        
+        /* Navegação ativa */
+        .nav-item { transition: all 0.2s ease-in-out; }
+        .nav-item.active { background-color: #F1F5F9; color: #00A1C9; font-weight: 600; border-left: 4px solid #00A1C9; }
+        .nav-item:not(.active) { border-left: 4px solid transparent; }
+
+        /* Abas e Elementos interativos */
+        .lesson-item:hover .play-icon { color: #00A1C9; transform: scale(1.1); }
+        .play-icon { transition: all 0.2s; }
+        
+        /* Acordeão de Módulos */
+        .module-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-in-out; }
+        .module-content.open { max-height: 1000px; }
+        .module-header.active i.fa-chevron-down { transform: rotate(180deg); }
+        
+        /* Barra de Progresso Circular Customizada */
+        .progress-ring { background: conic-gradient(#00A1C9 35%, #E2E8F0 0); border-radius: 50%; }
+        
+        /* Oculta scrollbar mantendo funcionalidade */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+
+        .glass { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+
+        /* Estilos do Catálogo de Cursos & Player */
+        .category-pill.active { background-color: #00A1C9; color: white; border-color: #00A1C9; }
+        .tab-btn.active { color: #00A1C9; border-bottom: 2px solid #00A1C9; font-weight: 600; }
+        .course-card { transition: transform 0.3s, box-shadow 0.3s; }
+        .course-card:hover { transform: translateY(-4px); box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.1); }
+        .lesson-row-item.active { background-color: #F0FDF4; border-left: 4px solid #10B981; color: #064E3B; font-weight: 600; }
+        .lesson-row-item.current { background-color: #E0F2FE; border-left: 4px solid #00A1C9; color: #0369A1; font-weight: 600; }
+
+        /* ===== GAMIFICAÇÃO ===== */
+        .xp-bar-fill { transition: width 0.8s cubic-bezier(0.22,1,0.36,1); }
+        .badge-card { transition: transform 0.3s, box-shadow 0.3s; cursor: default; }
+        .badge-card.earned { cursor: pointer; }
+        .badge-card.earned:hover { transform: translateY(-4px) scale(1.05); box-shadow: 0 16px 32px -8px rgba(0,161,201,0.35); }
+        .badge-card.locked { filter: grayscale(1); opacity: 0.45; }
+        @keyframes badgePop { 0%{transform:scale(0.3) rotate(-20deg);opacity:0} 60%{transform:scale(1.15) rotate(5deg)} 100%{transform:scale(1) rotate(0);opacity:1} }
+        .badge-pop { animation: badgePop 0.55s cubic-bezier(0.22,1,0.36,1) forwards; }
+        @keyframes xpFlash { 0%,100%{opacity:1} 50%{opacity:0.3} }
+        .xp-flash { animation: xpFlash 0.6s ease 2; }
+        @keyframes slideInRight { from{transform:translateX(120%);opacity:0} to{transform:translateX(0);opacity:1} }
+        .slide-in-right { animation: slideInRight 0.45s cubic-bezier(0.22,1,0.36,1) forwards; }
+        @keyframes confettiDrop { 0%{transform:translateY(-20px) rotate(0deg);opacity:1} 100%{transform:translateY(320px) rotate(720deg);opacity:0} }
+        .confetti-piece { position:absolute; width:10px; height:10px; border-radius:2px; animation: confettiDrop linear forwards; }
+        .leaderboard-row { transition: background 0.2s; }
+        .leaderboard-row:hover { background: #F8FAFC; }
+        .level-badge { background: linear-gradient(135deg, #002B49, #00A1C9); }
+        #gamification-modal { backdrop-filter: blur(8px); }
+        .streak-fire { animation: pulse 1.5s infinite; }
+        @keyframes numberRoll { from{transform:translateY(-100%);opacity:0} to{transform:translateY(0);opacity:1} }
+        .number-roll { animation: numberRoll 0.4s ease forwards; }
+    </style>
+</head>
+<body class="bg-indra-light text-slate-800 font-sans h-screen flex overflow-hidden selection:bg-indra-cyan selection:text-white">
+
+    <!-- Overlay Mobile Menu -->
+    <div id="mobile-overlay" onclick="toggleMobileMenu()" class="fixed inset-0 bg-indra-navy/50 backdrop-blur-sm z-30 hidden lg:hidden transition-opacity opacity-0"></div>
+
+    <!-- Sidebar / Menu Lateral -->
+    <aside id="sidebar" class="w-72 bg-white border-r border-gray-200 flex flex-col justify-between fixed lg:relative z-40 h-full transform -translate-x-full lg:translate-x-0 transition-transform duration-300 shadow-xl lg:shadow-none">
+        <div>
+            <!-- Logo Indra -->
+            <div class="h-20 flex items-center justify-between px-8 border-b border-gray-100">
+                <div class="flex items-center">
+                    <img src="/image/logocase.png" alt="Indra Group Logo" class="h-6 object-contain">
+                    <span class="text-indra-cyan ml-2 text-xs font-bold mt-1 tracking-widest uppercase">Learning</span>
+                </div>
+                <button onclick="toggleMobileMenu()" class="lg:hidden text-slate-400 hover:text-indra-navy">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <!-- Navegação -->
+            <div class="px-6 mt-8 mb-4">
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Menu Principal</p>
+            </div>
+            <nav class="flex flex-col gap-1 px-4">
+                <button onclick="navigate('dashboard')" id="nav-dashboard" class="nav-item flex items-center w-full px-4 py-3.5 text-slate-500 hover:bg-slate-50 rounded-lg text-left">
+                    <i class="fas fa-border-all w-8 text-lg"></i> <span class="font-medium">Meu Painel</span>
+                </button>
+                <button onclick="navigate('tracks')" id="nav-tracks" class="nav-item flex items-center w-full px-4 py-3.5 text-slate-500 hover:bg-slate-50 rounded-lg text-left">
+                    <i class="fas fa-layer-group w-8 text-lg"></i> <span class="font-medium">Trilha para Líderes</span>
+                </button>
+                <button onclick="navigate('courses')" id="nav-courses" class="nav-item flex items-center w-full px-4 py-3.5 text-slate-500 hover:bg-slate-50 rounded-lg text-left">
+                    <i class="fas fa-graduation-cap w-8 text-lg"></i> <span class="font-medium">Cursos e Treinamento</span>
+                </button>
+                <button onclick="navigate('values')" id="nav-values" class="nav-item flex items-center w-full px-4 py-3.5 text-slate-500 hover:bg-slate-50 rounded-lg text-left">
+                    <i class="fas fa-shield-alt w-8 text-lg"></i> <span class="font-medium">Cultura & Valores</span>
+                </button>
+                
+                <div class="px-2 mt-6 mb-2">
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Gestão</p>
+                </div>
+                <button onclick="navigate('request')" id="nav-request" class="nav-item flex items-center w-full px-4 py-3.5 text-slate-500 hover:bg-slate-50 rounded-lg text-left group">
+                    <i class="fas fa-plus-circle w-8 text-lg group-hover:text-indra-cyan transition-colors"></i> <span class="font-medium">Solicitar Treinamento</span>
+                </button>
+            </nav>
+        </div>
+        
+        <!-- Perfil do Usuário -->
+        <div class="p-6 border-t border-gray-100 bg-slate-50/50">
+            <div class="flex items-center gap-4 mb-4 cursor-pointer group">
+                <div class="relative">
+                    <img src="https://ui-avatars.com/api/?name=Jane+Doe&background=002B49&color=fff&size=100" class="w-12 h-12 rounded-full border-2 border-white shadow-sm group-hover:border-indra-cyan transition-colors" alt="User">
+                    <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-2 border-white rounded-full"></div>
+                </div>
+                <div>
+                    <p class="text-sm font-bold text-indra-navy font-heading">Jane Doe</p>
+                    <p class="text-xs text-slate-500">Nível 4 • Gestora</p>
+                </div>
+            </div>
+            <div>
+                <div class="flex justify-between text-xs text-slate-500 mb-1">
+                    <span>Progresso Anual</span>
+                    <span class="font-bold text-indra-cyan">2.450 XP</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-1.5">
+                    <div class="bg-gradient-to-r from-indra-navy to-indra-cyan h-1.5 rounded-full w-[75%]"></div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Área Principal -->
+    <main class="flex-1 flex flex-col h-full overflow-hidden relative">
+        
+        <!-- Header Topo -->
+        <header class="h-20 glass border-b border-gray-200 flex items-center justify-between px-6 lg:px-10 sticky top-0 z-10">
+            <div class="flex items-center gap-4 w-full lg:w-2/3">
+                <button onclick="toggleMobileMenu()" class="lg:hidden text-slate-500 hover:text-indra-navy">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                <div class="hidden lg:flex items-center w-full max-w-xl bg-slate-100 rounded-full px-5 py-2.5 border border-transparent focus-within:border-indra-cyan focus-within:bg-white focus-within:shadow-sm transition-all group">
+                    <i class="fas fa-search text-slate-400 group-focus-within:text-indra-cyan mr-3 transition-colors"></i>
+                    <input type="text" placeholder="Explore conteúdos, podcasts ou especialistas..." class="w-full bg-transparent border-none focus:outline-none text-sm text-slate-700 placeholder-slate-400">
+                </div>
+            </div>
+            <div class="flex items-center gap-4 lg:gap-6">
+                <button class="text-slate-400 hover:text-indra-cyan transition-colors hidden sm:block">
+                    <i class="fas fa-trophy text-xl"></i>
+                </button>
+                <button class="relative text-slate-400 hover:text-indra-cyan transition-colors">
+                    <i class="far fa-bell text-xl"></i>
+                    <span class="absolute 0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white animate-pulse-slow"></span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Container de Views -->
+        <div class="flex-1 overflow-y-auto p-6 lg:p-10 scroll-smooth" id="main-scroll-area">
+            
+            <!-- ================= VIEW 1: DASHBOARD (Resumo) ================= -->
+            <section id="view-dashboard" class="view-section max-w-7xl mx-auto">
+                <div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+                    <div>
+                        <h1 class="text-3xl lg:text-4xl font-bold text-indra-navy font-heading">Bem-vinda de volta, Jane.</h1>
+                        <p class="text-slate-500 mt-2 text-lg">Pronta para continuar seu desenvolvimento hoje?</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
+                    <!-- Continue Learning Card -->
+                    <div class="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col sm:flex-row group cursor-pointer hover:shadow-md transition-shadow relative" onclick="navigate('tracks')">
+                        <div class="sm:w-2/5 h-48 sm:h-auto relative overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1542626991-cbc4e32524cc?auto=format&fit=crop&w=800&q=80" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700" alt="Gestão de Equipes">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                            <div class="absolute bottom-4 left-4 right-4 text-white">
+                                <span class="bg-indra-cyan text-white text-xs font-bold px-2.5 py-1 rounded-md uppercase tracking-wide">Trilha Ativa</span>
+                            </div>
+                            <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20">
+                                <div class="w-12 h-12 bg-white/90 rounded-full flex items-center justify-center text-indra-cyan shadow-lg backdrop-blur-sm"><i class="fas fa-play ml-1"></i></div>
+                            </div>
+                        </div>
+                        <div class="p-6 sm:w-3/5 flex flex-col justify-between">
+                            <div>
+                                <h3 class="text-xl font-bold text-indra-navy mb-2 group-hover:text-indra-cyan transition-colors">Trilha para Líderes Indra</h3>
+                                <p class="text-sm text-slate-500 mb-4 line-clamp-2">Continue seu progresso no Módulo 2: Tomada de Decisão baseada em dados (Data-Driven).</p>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-2 font-medium">
+                                    <span class="text-slate-700">Módulo 2: Tomada de Decisão</span>
+                                    <span class="text-indra-cyan">35% Concluído</span>
+                                </div>
+                                <div class="w-full bg-slate-100 rounded-full h-2">
+                                    <div class="bg-indra-cyan h-2 rounded-full relative" style="width: 35%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mini Estatísticas -->
+                    <div class="flex flex-col gap-6">
+                        <div class="bg-indra-navy rounded-2xl p-6 text-white shadow-lg relative overflow-hidden">
+                            <div class="relative z-10 flex items-center justify-between">
+                                <div>
+                                    <p class="text-indigo-200 text-sm font-medium mb-1">Meta de Aprendizado</p>
+                                    <h4 class="text-3xl font-bold font-heading">14h <span class="text-lg font-normal text-indigo-300">/ 40h</span></h4>
+                                </div>
+                                <div class="w-16 h-16 progress-ring flex items-center justify-center shadow-inner">
+                                    <div class="w-12 h-12 bg-indra-navy rounded-full flex items-center justify-center text-sm font-bold">35%</div>
+                                </div>
+                            </div>
+                            <i class="fas fa-fire absolute -right-6 -bottom-6 text-8xl text-white opacity-5"></i>
+                        </div>
+                        <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex items-center justify-between cursor-pointer hover:border-indra-cyan/30 transition-colors">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center text-xl shadow-sm"><i class="fas fa-award"></i></div>
+                                <div>
+                                    <p class="text-sm text-slate-500 font-medium">Reconhecimentos</p>
+                                    <h4 class="text-xl font-bold text-slate-800">4 Badges</h4>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-right text-slate-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= VIEW 2: TRILHA PARA LÍDERES (Baseada no PDF) ================= -->
+            <section id="view-tracks" class="view-section active max-w-7xl mx-auto">
+                
+                <!-- Player Header / Video Placeholder -->
+                <div class="bg-indra-dark rounded-2xl overflow-hidden shadow-xl mb-8 relative group">
+                    <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1200&q=80" class="w-full h-64 lg:h-80 object-cover opacity-30 mix-blend-overlay" alt="Cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-indra-dark via-indra-dark/60 to-transparent"></div>
+                    <div class="absolute inset-0 flex flex-col justify-end p-8 lg:p-10 text-white">
+                        <span class="bg-indra-cyan/20 text-indra-cyan border border-indra-cyan/50 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide w-max mb-4 backdrop-blur-sm">Academia Corporativa</span>
+                        <h1 class="text-3xl lg:text-5xl font-bold font-heading mb-3">Trilha para Líderes</h1>
+                        <p class="text-slate-300 text-lg max-w-3xl hidden md:block">Programa estruturado em formato Blended Learning. Desenvolva-se através de desafios práticos, workshops e conteúdos interativos aplicados à realidade do Grupo Indra.</p>
+                        
+                        <div class="mt-6 flex items-center gap-4">
+                            <button onclick="openCoursePlayer('lideranca-indra', 'l2-2')" class="bg-indra-cyan hover:bg-cyan-500 text-white px-8 py-3 rounded-lg font-bold transition-colors shadow-lg shadow-cyan-500/30 flex items-center gap-3">
+                                <i class="fas fa-play"></i> Retomar Módulo 2
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Currículo e Metodologia -->
+                <div class="flex flex-col lg:flex-row gap-8">
+                    
+                    <!-- Sidebar: Info & Metodologia (PDF Ref) -->
+                    <div class="w-full lg:w-1/3 flex flex-col gap-6 order-2 lg:order-1">
+                        <!-- Progress Box -->
+                        <div class="bg-white rounded-xl p-6 border border-gray-100 shadow-sm relative overflow-hidden">
+                            <div class="absolute top-0 left-0 w-1 h-full bg-indra-cyan"></div>
+                            <h3 class="font-bold text-slate-800 mb-4 font-heading">Estatísticas da Jornada</h3>
+                            <div class="flex justify-between items-end mb-2">
+                                <span class="text-3xl font-bold text-indra-navy">35%</span>
+                                <span class="text-sm text-slate-500 mb-1">Módulo 2 de 4</span>
+                            </div>
+                            <div class="w-full bg-slate-100 rounded-full h-2.5 mb-4">
+                                <div class="bg-indra-cyan h-2.5 rounded-full" style="width: 35%"></div>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-2"><i class="fas fa-trophy text-amber-500 mr-1"></i> Termine para ganhar a Badge Estratégica.</p>
+                        </div>
+
+                        <!-- Metodologia Box -->
+                        <div class="bg-white rounded-xl p-6 border border-gray-100 shadow-sm">
+                            <h3 class="font-bold text-slate-800 mb-4 font-heading border-b border-gray-100 pb-3">Estrutura de Engajamento</h3>
+                            <ul class="space-y-4 text-sm text-slate-600">
+                                <li>
+                                    <div class="flex items-start gap-3">
+                                        <div class="bg-blue-50 text-blue-600 p-2 rounded shrink-0"><i class="fas fa-chart-pie"></i></div>
+                                        <div>
+                                            <strong class="text-slate-800 block">Modelo 70-20-10</strong>
+                                            <span class="text-xs">70% resolução de problemas reais (on-the-job), 20% social learning e 10% nivelamento conceitual ágil.</span>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="flex items-start gap-3">
+                                        <div class="bg-emerald-50 text-emerald-600 p-2 rounded shrink-0"><i class="fas fa-brain"></i></div>
+                                        <div>
+                                            <strong class="text-slate-800 block">Andragogia</strong>
+                                            <span class="text-xs">Trilhas que respeitam a bagagem prévia do líder, oferecendo autonomia e foco em dores reais do dia a dia.</span>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="flex items-start gap-3">
+                                        <div class="bg-purple-50 text-purple-600 p-2 rounded shrink-0"><i class="fas fa-gamepad"></i></div>
+                                        <div>
+                                            <strong class="text-slate-800 block">Gamificação</strong>
+                                            <span class="text-xs">Conquistas, progressão visual e recompensas para impulsionar conclusão e mapear evolução das skills em tempo real.</span>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="flex items-start gap-3">
+                                        <div class="bg-amber-50 text-amber-600 p-2 rounded shrink-0"><i class="fas fa-users"></i></div>
+                                        <div>
+                                            <strong class="text-slate-800 block">Mentorias</strong>
+                                            <span class="text-xs">Conexão com líderes seniores para guiar a visão de negócios e acelerar o desenvolvimento.</span>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="flex items-start gap-3">
+                                        <div class="bg-rose-50 text-rose-600 p-2 rounded shrink-0"><i class="fas fa-bullseye"></i></div>
+                                        <div>
+                                            <strong class="text-slate-800 block">Motivação e Propósito</strong>
+                                            <span class="text-xs">Competências conectadas aos KPIs da área, ciclo de avaliação de desempenho e ao PDI individual.</span>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Conteúdo: Lista de Módulos (Baseado no PDF) -->
+                    <div class="w-full lg:w-2/3 order-1 lg:order-2">
+                        <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden flex flex-col gap-[1px] bg-gray-100">
+                            
+                            <!-- MÓDULO 1: Comunicação (Concluído) -->
+                            <div class="bg-white">
+                                <div class="module-header p-5 flex justify-between items-center cursor-pointer hover:bg-slate-50 transition-colors" onclick="toggleModule('mod1')">
+                                    <div class="flex items-start gap-4">
+                                        <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0 mt-1"><i class="fas fa-check"></i></div>
+                                        <div>
+                                            <span class="text-xs font-bold text-indigo-500 uppercase tracking-wider mb-1 block">Módulo 1</span>
+                                            <h4 class="font-bold text-slate-800 text-lg">Comunicação para Líderes</h4>
+                                            <div class="flex items-center gap-2 mt-1">
+                                                <span class="bg-gray-100 text-gray-600 text-[10px] px-2 py-0.5 rounded font-medium"><i class="fas fa-podcast mr-1"></i> Microlearning & Podcasts</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <i class="fas fa-chevron-down text-slate-400 transition-transform duration-300"></i>
+                                </div>
+                                <div id="mod1" class="module-content open bg-white border-t border-gray-50">
+                                    <div class="p-5 pl-16 bg-emerald-50/30 text-sm text-slate-600 border-b border-gray-50 italic">
+                                        Objetivo: Capacitar líderes para conversas de alto impacto, alinhamento de expectativas e influenciar stakeholders em ambientes dinâmicos.
+                                    </div>
+                                    <div class="divide-y divide-gray-50">
+                                        <div onclick="openCoursePlayer('lideranca-indra', 'l1-1')" class="p-4 pl-16 flex items-center justify-between hover:bg-slate-50 cursor-pointer">
+                                            <div class="flex items-center gap-3"><i class="fas fa-check-circle text-emerald-500 text-lg"></i> <span class="text-sm text-slate-600">Comunicação adaptativa para diferentes perfis de colaboradores</span></div>
+                                            <span class="text-xs text-slate-400">Podcast • 12m</span>
+                                        </div>
+                                        <div onclick="openCoursePlayer('lideranca-indra', 'l1-2')" class="p-4 pl-16 flex items-center justify-between hover:bg-slate-50 cursor-pointer">
+                                            <div class="flex items-center gap-3"><i class="fas fa-check-circle text-emerald-500 text-lg"></i> <span class="text-sm text-slate-600">Escuta ativa e escuta estratégica</span></div>
+                                            <span class="text-xs text-slate-400">Pílula • 8m</span>
+                                        </div>
+                                        <div onclick="openCoursePlayer('lideranca-indra', 'l1-3')" class="p-4 pl-16 flex items-center justify-between hover:bg-slate-50 cursor-pointer">
+                                            <div class="flex items-center gap-3"><i class="fas fa-check-circle text-emerald-500 text-lg"></i> <span class="text-sm text-slate-600">Feedback contínuo e conversas difíceis</span></div>
+                                            <span class="text-xs text-slate-400">Vídeo • 15m</span>
+                                        </div>
+                                        <div onclick="openCoursePlayer('lideranca-indra', 'l1-4')" class="p-4 pl-16 flex items-center justify-between hover:bg-slate-50 cursor-pointer">
+                                            <div class="flex items-center gap-3"><i class="fas fa-check-circle text-emerald-500 text-lg"></i> <span class="text-sm text-slate-600">Comunicação em cenários de mudança</span></div>
+                                            <span class="text-xs text-slate-400">Pílula • 10m</span>
+                                        </div>
+                                        <div onclick="openCoursePlayer('lideranca-indra', 'l1-5')" class="p-4 pl-16 flex items-center justify-between hover:bg-slate-50 cursor-pointer">
+                                            <div class="flex items-center gap-3"><i class="fas fa-check-circle text-emerald-500 text-lg"></i> <span class="text-sm text-slate-600">Storytelling para liderança</span></div>
+                                            <span class="text-xs text-slate-400">Artigo • 10m</span>
+                                        </div>
+                                        <div onclick="openCoursePlayer('lideranca-indra', 'l1-6')" class="p-4 pl-16 flex items-center justify-between hover:bg-slate-50 cursor-pointer">
+                                            <div class="flex items-center gap-3"><i class="fas fa-check-circle text-emerald-500 text-lg"></i> <span class="text-sm text-slate-600">Gestão de conflitos e negociação</span></div>
+                                            <span class="text-xs text-slate-400">Vídeo • 14m</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- MÓDULO 2: Tomada de Decisão (Ativo) -->
+                            <div class="bg-white">
+                                <div class="module-header active p-5 flex justify-between items-center cursor-pointer border-l-4 border-indra-cyan hover:bg-slate-50 transition-colors" onclick="toggleModule('mod2')">
+                                    <div class="flex items-start gap-4">
+                                        <div class="w-10 h-10 rounded-full bg-indra-accent text-indra-cyan flex items-center justify-center font-bold shrink-0 mt-1">2</div>
+                                        <div>
+                                            <span class="text-xs font-bold text-indra-cyan uppercase tracking-wider mb-1 block">Módulo 2 (Atual)</span>
+                                            <h4 class="font-bold text-indra-navy text-lg">Tomada de Decisão</h4>
+                                            <div class="flex items-center gap-2 mt-1">
+                                                <span class="bg-amber-100 text-amber-700 text-[10px] px-2 py-0.5 rounded font-medium"><i class="fas fa-laptop-code mr-1"></i> Estudo de Caso Ramificado</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <i class="fas fa-chevron-down text-indra-cyan transition-transform duration-300"></i>
+                                </div>
+                                <div id="mod2" class="module-content open bg-white border-t border-gray-50">
+                                    <div class="p-5 pl-16 bg-blue-50/30 text-sm text-slate-600 border-b border-gray-50 italic">
+                                        Objetivo: Desenvolver a capacidade analítica para decisões baseadas em dados (Data-driven), mitigando vieses e avaliando riscos de negócios.
+                                    </div>
+                                    <div class="divide-y divide-gray-50">
+                                        <div onclick="openCoursePlayer('lideranca-indra', 'l2-1')" class="p-4 pl-16 flex items-center justify-between hover:bg-slate-50 cursor-pointer lesson-item">
+                                            <div class="flex items-center gap-3"><i class="fas fa-check-circle text-emerald-500 text-lg"></i> <span class="text-sm text-slate-600">Tomada de decisão sob pressão</span></div>
+                                            <span class="text-xs text-slate-400">Interativo • 20m</span>
+                                        </div>
+                                        <!-- Aula Atual -->
+                                        <div onclick="openCoursePlayer('lideranca-indra', 'l2-2')" class="p-4 pl-16 flex items-center justify-between bg-indigo-50/40 border-l-2 border-indigo-400 ml-2 cursor-pointer lesson-item">
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-5 h-5 rounded-full border-2 border-indra-cyan flex items-center justify-center play-icon relative shrink-0">
+                                                    <div class="w-2 h-2 bg-indra-cyan rounded-full animate-pulse"></div>
+                                                </div>
+                                                <span class="text-sm font-semibold text-indra-navy">Pensamento crítico e vieses cognitivos</span>
+                                            </div>
+                                            <span class="text-xs text-indra-cyan font-bold bg-white px-2 py-1 rounded shadow-sm">RETOMAR</span>
+                                        </div>
+                                        <div onclick="openCoursePlayer('lideranca-indra', 'l2-3')" class="p-4 pl-16 flex items-center justify-between hover:bg-slate-50 cursor-pointer lesson-item">
+                                            <div class="flex items-center gap-3"><i class="far fa-play-circle text-slate-300 text-lg play-icon"></i> <span class="text-sm text-slate-500">Análise de riscos e impactos</span></div>
+                                            <span class="text-xs text-slate-400">Caso Prático • 20m</span>
+                                        </div>
+                                        <div onclick="openCoursePlayer('lideranca-indra', 'l2-4')" class="p-4 pl-16 flex items-center justify-between hover:bg-slate-50 cursor-pointer lesson-item">
+                                            <div class="flex items-center gap-3"><i class="far fa-play-circle text-slate-300 text-lg play-icon"></i> <span class="text-sm text-slate-500">Data-driven decision making</span></div>
+                                            <span class="text-xs text-slate-400">Caso Prático • 25m</span>
+                                        </div>
+                                        <div onclick="openCoursePlayer('lideranca-indra', 'l2-5')" class="p-4 pl-16 flex items-center justify-between hover:bg-slate-50 cursor-pointer lesson-item">
+                                            <div class="flex items-center gap-3"><i class="far fa-play-circle text-slate-300 text-lg play-icon"></i> <span class="text-sm text-slate-500">Priorização, trade-offs e resolução estruturada</span></div>
+                                            <span class="text-xs text-slate-400">Simulador • 25m</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- MÓDULO 3: Gestão de Equipes (Bloqueado) -->
+                            <div class="bg-white" onclick="alert('Este módulo está bloqueado. Conclua o Módulo 2 (Tomada de Decisão) para liberá-lo.')">
+                                <div class="module-header p-5 flex justify-between items-center cursor-pointer hover:bg-slate-50 transition-colors opacity-75" onclick="toggleModule('mod3'); event.stopPropagation();">
+                                    <div class="flex items-start gap-4">
+                                        <div class="w-10 h-10 rounded-full bg-gray-100 text-gray-400 flex items-center justify-center font-bold shrink-0 mt-1"><i class="fas fa-lock text-sm"></i></div>
+                                        <div>
+                                            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 block">Módulo 3</span>
+                                            <h4 class="font-bold text-slate-500 text-lg">Gestão de Equipes</h4>
+                                            <div class="flex items-center gap-2 mt-1">
+                                                <span class="bg-gray-100 text-gray-500 text-[10px] px-2 py-0.5 rounded font-medium"><i class="fas fa-chart-line mr-1"></i> Diagnóstico & Plano de Ação</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <i class="fas fa-chevron-down text-slate-300 transition-transform duration-300"></i>
+                                </div>
+                                <div id="mod3" class="module-content bg-white border-t border-gray-50">
+                                    <div class="p-5 pl-16 bg-gray-50/50 text-sm text-slate-500 border-b border-gray-50 italic">
+                                        Objetivo: Instrumentalizar a liderança para a construção de times de alta performance, promovendo segurança psicológica e accountability.
+                                    </div>
+                                    <div class="divide-y divide-gray-50 opacity-60">
+                                        <div class="p-4 pl-16 flex items-center gap-3"><i class="fas fa-lock text-slate-300"></i> <span class="text-sm text-slate-500">Formação e desenvolvimento de equipes</span></div>
+                                        <div class="p-4 pl-16 flex items-center gap-3"><i class="fas fa-lock text-slate-300"></i> <span class="text-sm text-slate-500">Delegação estratégica</span></div>
+                                        <div class="p-4 pl-16 flex items-center gap-3"><i class="fas fa-lock text-slate-300"></i> <span class="text-sm text-slate-500">Engajamento e motivação</span></div>
+                                        <div class="p-4 pl-16 flex items-center gap-3"><i class="fas fa-lock text-slate-300"></i> <span class="text-sm text-slate-500">Gestão de desempenho</span></div>
+                                        <div class="p-4 pl-16 flex items-center gap-3"><i class="fas fa-lock text-slate-300"></i> <span class="text-sm text-slate-500">Gestão de talentos</span></div>
+                                        <div class="p-4 pl-16 flex items-center gap-3"><i class="fas fa-lock text-slate-300"></i> <span class="text-sm text-slate-500">Liderança situacional</span></div>
+                                        <div class="p-4 pl-16 flex items-center gap-3"><i class="fas fa-lock text-slate-300"></i> <span class="text-sm text-slate-500">Segurança psicológica</span></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- MÓDULO 4: Cultura (Bloqueado) -->
+                            <div class="bg-white" onclick="alert('Este módulo está bloqueado. Conclua o Módulo 2 (Tomada de Decisão) para liberá-lo.')">
+                                <div class="module-header p-5 flex justify-between items-center cursor-pointer hover:bg-slate-50 transition-colors opacity-75" onclick="toggleModule('mod4'); event.stopPropagation();">
+                                    <div class="flex items-start gap-4">
+                                        <div class="w-10 h-10 rounded-full bg-gray-100 text-gray-400 flex items-center justify-center font-bold shrink-0 mt-1"><i class="fas fa-lock text-sm"></i></div>
+                                        <div>
+                                            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 block">Módulo 4</span>
+                                            <h4 class="font-bold text-slate-500 text-lg">Cultura Organizacional</h4>
+                                            <div class="flex items-center gap-2 mt-1">
+                                                <span class="bg-gray-100 text-gray-500 text-[10px] px-2 py-0.5 rounded font-medium"><i class="fas fa-users-cog mr-1"></i> Social Learning & Fóruns</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <i class="fas fa-chevron-down text-slate-300 transition-transform duration-300"></i>
+                                </div>
+                                <div id="mod4" class="module-content bg-white border-t border-gray-50">
+                                    <div class="p-5 pl-16 bg-gray-50/50 text-sm text-slate-500 border-b border-gray-50 italic">
+                                        Objetivo: Posicionar o líder como principal embaixador e guardião da cultura, traduzindo valores abstratos em comportamentos operacionais diários.
+                                    </div>
+                                    <div class="divide-y divide-gray-50 opacity-60">
+                                        <div class="p-4 pl-16 flex items-center gap-3"><i class="fas fa-lock text-slate-300"></i> <span class="text-sm text-slate-500">Papel da liderança na cultura</span></div>
+                                        <div class="p-4 pl-16 flex items-center gap-3"><i class="fas fa-lock text-slate-300"></i> <span class="text-sm text-slate-500">Valores organizacionais na prática</span></div>
+                                        <div class="p-4 pl-16 flex items-center gap-3"><i class="fas fa-lock text-slate-300"></i> <span class="text-sm text-slate-500">Gestão da mudança</span></div>
+                                        <div class="p-4 pl-16 flex items-center gap-3"><i class="fas fa-lock text-slate-300"></i> <span class="text-sm text-slate-500">Diversidade e inclusão</span></div>
+                                        <div class="p-4 pl-16 flex items-center gap-3"><i class="fas fa-lock text-slate-300"></i> <span class="text-sm text-slate-500">Ética e compliance</span></div>
+                                        <div class="p-4 pl-16 flex items-center gap-3"><i class="fas fa-lock text-slate-300"></i> <span class="text-sm text-slate-500">Experiência do colaborador</span></div>
+                                        <div class="p-4 pl-16 flex items-center gap-3"><i class="fas fa-lock text-slate-300"></i> <span class="text-sm text-slate-500">Cultura de aprendizagem contínua</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= VIEW 3: CULTURA & VALORES ================= -->
+            <section id="view-values" class="view-section max-w-7xl mx-auto">
+                <div class="text-center mb-16 max-w-3xl mx-auto">
+                    <span class="text-indra-cyan font-bold tracking-widest uppercase text-sm mb-3 block">Nosso DNA</span>
+                    <h1 class="text-4xl lg:text-5xl font-bold text-indra-navy mb-6 font-heading tracking-tight">Cultura que Transforma</h1>
+                    <p class="text-slate-500 text-lg leading-relaxed">Os valores que compartilhamos na Indra são a base da nossa cultura, norteando cada linha de código, cada projeto e cada relação humana que construímos.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Valor: Inovação -->
+                    <div class="group relative rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 h-[350px] cursor-pointer">
+                        <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=800&q=80" class="absolute inset-0 w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700" alt="Inovação">
+                        <div class="absolute inset-0 bg-gradient-to-t from-indra-navy/90 via-indra-navy/50 to-transparent"></div>
+                        <div class="absolute inset-0 p-8 flex flex-col justify-end text-white transform translate-y-8 group-hover:translate-y-0 transition-transform duration-500">
+                            <div class="w-12 h-12 bg-indra-cyan rounded-lg flex items-center justify-center mb-4 shadow-lg group-hover:-translate-y-2 transition-transform duration-500 delay-100">
+                                <i class="fas fa-lightbulb text-2xl"></i>
+                            </div>
+                            <h3 class="text-3xl font-bold font-heading mb-3">Inovação</h3>
+                            <p class="text-indigo-100 text-sm leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-200">Impulsionamos um futuro mais conectado por meio da tecnologia e soluções de ponta. Não apenas nos adaptamos às mudanças, nós as criamos.</p>
+                        </div>
+                    </div>
+
+                    <!-- Valor: Confiança -->
+                    <div class="group relative rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 h-[350px] cursor-pointer">
+                        <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=800&q=80" class="absolute inset-0 w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700" alt="Confiar">
+                        <div class="absolute inset-0 bg-gradient-to-t from-indra-navy/90 via-indra-navy/50 to-transparent"></div>
+                        <div class="absolute inset-0 p-8 flex flex-col justify-end text-white transform translate-y-8 group-hover:translate-y-0 transition-transform duration-500">
+                            <div class="w-12 h-12 bg-indra-cyan rounded-lg flex items-center justify-center mb-4 shadow-lg group-hover:-translate-y-2 transition-transform duration-500 delay-100">
+                                <i class="fas fa-handshake text-2xl"></i>
+                            </div>
+                            <h3 class="text-3xl font-bold font-heading mb-3">Confiança</h3>
+                            <p class="text-indigo-100 text-sm leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-200">Trabalhamos com solidez e transparência, construindo relações duradouras baseadas na integridade com clientes, sociedade e nossa própria equipe.</p>
+                        </div>
+                    </div>
+
+                    <!-- Valor: Conexão -->
+                    <div class="group relative rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 h-[350px] cursor-pointer md:translate-y-8">
+                        <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80" class="absolute inset-0 w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700" alt="Conexão">
+                        <div class="absolute inset-0 bg-gradient-to-t from-indra-navy/90 via-indra-navy/50 to-transparent"></div>
+                        <div class="absolute inset-0 p-8 flex flex-col justify-end text-white transform translate-y-8 group-hover:translate-y-0 transition-transform duration-500">
+                            <div class="w-12 h-12 bg-indra-cyan rounded-lg flex items-center justify-center mb-4 shadow-lg group-hover:-translate-y-2 transition-transform duration-500 delay-100">
+                                <i class="fas fa-project-diagram text-2xl"></i>
+                            </div>
+                            <h3 class="text-3xl font-bold font-heading mb-3">Conexão</h3>
+                            <p class="text-indigo-100 text-sm leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-200">O poder do "nós" supera o "eu". Ativamos o poder da colaboração global para criar sinergia e adaptar nossas soluções às necessidades reais.</p>
+                        </div>
+                    </div>
+
+                    <!-- Valor: Antecipação -->
+                    <div class="group relative rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 h-[350px] cursor-pointer md:translate-y-8">
+                        <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=800&q=80" class="absolute inset-0 w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700" alt="Antecipação">
+                        <div class="absolute inset-0 bg-gradient-to-t from-indra-navy/90 via-indra-navy/50 to-transparent"></div>
+                        <div class="absolute inset-0 p-8 flex flex-col justify-end text-white transform translate-y-8 group-hover:translate-y-0 transition-transform duration-500">
+                            <div class="w-12 h-12 bg-indra-cyan rounded-lg flex items-center justify-center mb-4 shadow-lg group-hover:-translate-y-2 transition-transform duration-500 delay-100">
+                                <i class="fas fa-eye text-2xl"></i>
+                            </div>
+                            <h3 class="text-3xl font-bold font-heading mb-3">Antecipação</h3>
+                            <p class="text-indigo-100 text-sm leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-200">Lemos os sinais do amanhã hoje. Transformamos nossa experiência em previsibilidade para garantir a segurança e o sucesso contínuo de nossos clientes.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= VIEW 4: SOLICITAR TREINAMENTO (PERGUNTAS REQUISITADAS) ================= -->
+            <section id="view-request" class="view-section max-w-4xl mx-auto">
+                
+                <div class="mb-10 text-center">
+                    <h1 class="text-3xl lg:text-4xl font-bold text-indra-navy font-heading">Portal de Demandas de L&D</h1>
+                    <p class="text-slate-500 mt-3 text-lg">Indique as necessidades de desenvolvimento da sua equipe. Nossos Arquitetos de Aprendizagem cuidarão do resto.</p>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 lg:p-10 relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-indra-navy via-indra-cyan to-indigo-400"></div>
+
+                    <!-- Mensagem de Sucesso -->
+                    <div id="success-message" class="hidden text-center py-10 animate-fade-in-up">
+                        <div class="w-24 h-24 bg-emerald-100 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-check text-5xl"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-indra-navy font-heading mb-4">Solicitação Recebida!</h2>
+                        <p class="text-slate-600 text-lg max-w-md mx-auto mb-8">O protocolo <strong class="text-indra-cyan">#LD-2026-894</strong> foi gerado. Um Designer Instrucional entrará em contato em até 48h úteis para o briefing inicial.</p>
+                        <button onclick="resetForm()" class="bg-indra-navy hover:bg-indigo-900 text-white px-8 py-3 rounded-lg font-medium transition-colors shadow-lg">
+                            Fazer Nova Solicitação
+                        </button>
+                    </div>
+
+                    <!-- Formulário Contendo EXATAMENTE as perguntas do código base original -->
+                    <form id="training-form" onsubmit="submitForm(event)">
+                        
+                        <!-- Passo 1: Escopo e Público-Alvo -->
+                        <div class="mb-10 relative">
+                            <div class="flex items-center gap-4 mb-6">
+                                <div class="w-10 h-10 rounded-full bg-indra-accent text-indra-cyan flex items-center justify-center font-bold text-lg shadow-sm">1</div>
+                                <h3 class="text-2xl font-bold text-slate-800 font-heading">Escopo e Público-Alvo</h3>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="requestType" value="individual" onchange="toggleRequestType()" class="peer sr-only">
+                                    <div class="p-5 border-2 border-gray-100 rounded-xl hover:border-indra-cyan/50 peer-checked:border-indra-cyan peer-checked:bg-indra-accent/30 transition-all flex items-start gap-4 h-full">
+                                        <div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 peer-checked:text-indra-cyan peer-checked:bg-white shrink-0 shadow-sm">
+                                            <i class="fas fa-user-astronaut text-xl"></i>
+                                        </div>
+                                        <div>
+                                            <span class="font-bold text-slate-800 block text-lg mb-1">Upskilling Individual</span>
+                                            <span class="text-sm text-slate-500">Para 1 colaborador específico.</span>
+                                        </div>
+                                    </div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="requestType" value="equipe" onchange="toggleRequestType()" class="peer sr-only" checked>
+                                    <div class="p-5 border-2 border-gray-100 rounded-xl hover:border-indra-cyan/50 peer-checked:border-indra-cyan peer-checked:bg-indra-accent/30 transition-all flex items-start gap-4 h-full">
+                                        <div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 peer-checked:text-indra-cyan peer-checked:bg-white shrink-0 shadow-sm">
+                                            <i class="fas fa-users text-xl"></i>
+                                        </div>
+                                        <div>
+                                            <span class="font-bold text-slate-800 block text-lg mb-1">Desenvolvimento de Equipe</span>
+                                            <span class="text-sm text-slate-500">Para times, squads ou áreas.</span>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 bg-slate-50 p-6 rounded-xl border border-slate-100">
+                                <div class="md:col-span-2">
+                                    <label class="block text-sm font-bold text-slate-700 mb-2">Área ou Projeto Solicitante</label>
+                                    <div class="relative">
+                                        <i class="fas fa-building absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
+                                        <input type="text" id="form-area" required class="w-full bg-white border border-gray-200 rounded-lg py-3 pl-10 pr-4 focus:ring-2 focus:ring-indra-cyan outline-none transition-all shadow-sm" placeholder="Ex: Operações Latam, Squad de Inovação...">
+                                    </div>
+                                </div>
+                                <div id="group-team-size">
+                                    <label class="block text-sm font-bold text-slate-700 mb-2">Nº de Colaboradores</label>
+                                    <div class="relative">
+                                        <i class="fas fa-hashtag absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
+                                        <input type="number" id="form-size" min="2" class="w-full bg-white border border-gray-200 rounded-lg py-3 pl-10 pr-4 focus:ring-2 focus:ring-indra-cyan outline-none transition-all shadow-sm" placeholder="Ex: 15">
+                                    </div>
+                                </div>
+                                <div id="group-individual-name" class="hidden md:col-span-3 animate-fade-in-up">
+                                    <label class="block text-sm font-bold text-slate-700 mb-2">Nome do Colaborador</label>
+                                    <div class="relative">
+                                        <i class="fas fa-id-badge absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
+                                        <input type="text" id="form-colaborador" class="w-full bg-white border border-gray-200 rounded-lg py-3 pl-10 pr-4 focus:ring-2 focus:ring-indra-cyan outline-none transition-all shadow-sm" placeholder="Nome completo e e-mail">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Passo 2: Alinhamento Estratégico -->
+                        <div class="mb-10">
+                            <div class="flex items-center gap-4 mb-6">
+                                <div class="w-10 h-10 rounded-full bg-indra-accent text-indra-cyan flex items-center justify-center font-bold text-lg shadow-sm">2</div>
+                                <h3 class="text-2xl font-bold text-slate-800 font-heading">Alinhamento Estratégico</h3>
+                            </div>
+                            
+                            <div class="space-y-6">
+                                <div>
+                                    <label class="block text-sm font-bold text-slate-700 mb-2">Tema Macro / Habilidade (Hard ou Soft Skill)</label>
+                                    <input type="text" id="form-tema" required class="w-full bg-white border border-gray-200 rounded-lg p-3 focus:ring-2 focus:ring-indra-cyan outline-none transition-all shadow-sm" placeholder="Ex: Cloud AWS, Comunicação Não-Violenta, Gestão Ágil...">
+                                </div>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label class="block text-sm font-bold text-slate-700 mb-2">Nível do Público-Alvo</label>
+                                        <select required class="w-full bg-white border border-gray-200 rounded-lg p-3 focus:ring-2 focus:ring-indra-cyan outline-none transition-all shadow-sm text-slate-700">
+                                            <option value="">Selecione a maturidade...</option>
+                                            <option>Júnior / Assistentes</option>
+                                            <option>Pleno / Analistas</option>
+                                            <option>Sênior / Especialistas</option>
+                                            <option>Liderança (Coordenadores/Gerentes)</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-bold text-slate-700 mb-2">Pilar/Valor Indra associado</label>
+                                        <select required class="w-full bg-white border border-gray-200 rounded-lg p-3 focus:ring-2 focus:ring-indra-cyan outline-none transition-all shadow-sm text-slate-700">
+                                            <option value="">Selecione o valor principal...</option>
+                                            <option>Inovação (Innovation)</option>
+                                            <option>Confiança (Trust)</option>
+                                            <option>Conexão (Connection)</option>
+                                            <option>Visão de Futuro (Foresight)</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label class="block text-sm font-bold text-slate-700 mb-2">Pain Point (Qual a dor/problema atual?)</label>
+                                        <textarea required rows="3" class="w-full bg-white border border-gray-200 rounded-lg p-3 focus:ring-2 focus:ring-indra-cyan outline-none transition-all shadow-sm resize-none" placeholder="Ex: Nossa equipe tem atrasado entregas devido à falta de alinhamento..."></textarea>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-bold text-slate-700 mb-2">Métricas de Sucesso (O que esperamos melhorar?)</label>
+                                        <textarea required rows="3" class="w-full bg-white border border-gray-200 rounded-lg p-3 focus:ring-2 focus:ring-indra-cyan outline-none transition-all shadow-sm resize-none" placeholder="Ex: Redução de 15% nos chamados de suporte N2..."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Passo 3: Logística e Formato -->
+                        <div class="mb-10">
+                            <div class="flex items-center gap-4 mb-6">
+                                <div class="w-10 h-10 rounded-full bg-indra-accent text-indra-cyan flex items-center justify-center font-bold text-lg shadow-sm">3</div>
+                                <h3 class="text-2xl font-bold text-slate-800 font-heading">Logística e Preferências</h3>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-bold text-slate-700 mb-2">Formato Preferencial</label>
+                                    <select required class="w-full bg-white border border-gray-200 rounded-lg p-3 focus:ring-2 focus:ring-indra-cyan outline-none transition-all shadow-sm text-slate-700">
+                                        <option value="">Selecione o formato ideal...</option>
+                                        <option>E-learning (Assíncrono / Plataforma)</option>
+                                        <option>Masterclass Online (Síncrono via Teams)</option>
+                                        <option>Workshop Presencial / Hands-on</option>
+                                        <option>Blended (Misto / Híbrido)</option>
+                                        <option>Programa de Mentoria (1:1)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-slate-700 mb-2">Urgência da Execução</label>
+                                    <select required class="w-full bg-white border border-gray-200 rounded-lg p-3 focus:ring-2 focus:ring-indra-cyan outline-none transition-all shadow-sm text-slate-700">
+                                        <option value="">Selecione o prazo...</option>
+                                        <option>Alta (Necessário para os próximos 30 dias)</option>
+                                        <option>Média (Neste trimestre)</option>
+                                        <option>Baixa (Roadmap anual / Próximo semestre)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Passo 4: Curadoria & Especialistas -->
+                        <div class="mb-10">
+                            <div class="flex items-center gap-4 mb-6">
+                                <div class="w-10 h-10 rounded-full bg-indra-accent text-indra-cyan flex items-center justify-center font-bold text-lg shadow-sm">4</div>
+                                <h3 class="text-2xl font-bold text-slate-800 font-heading">Apoio Técnico e Anexos</h3>
+                            </div>
+
+                            <div class="bg-blue-50/50 p-6 rounded-xl border border-blue-100 space-y-6 mb-6">
+                                <div>
+                                    <label class="block text-sm font-bold text-slate-700 mb-2">Você possui um Especialista Técnico Interno (SME) disponível para apoiar a construção do conteúdo?</label>
+                                    <select id="sme-select" onchange="toggleSmeInput()" class="w-full bg-white border border-gray-200 rounded-lg p-3 focus:ring-2 focus:ring-indra-cyan outline-none shadow-sm text-slate-700">
+                                        <option value="nao">Não, precisaremos de curadoria do time de Learning ou externa.</option>
+                                        <option value="sim">Sim, temos um líder/especialista que domina o assunto.</option>
+                                    </select>
+                                </div>
+                                <div id="sme-input-group" class="hidden animate-fade-in-up">
+                                    <label class="block text-sm font-bold text-slate-700 mb-2">Nome / E-mail Corporativo do Especialista</label>
+                                    <div class="relative">
+                                        <i class="fas fa-user-tie absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
+                                        <input type="text" class="w-full bg-white border border-gray-200 rounded-lg py-3 pl-10 pr-4 focus:ring-2 focus:ring-indra-cyan outline-none shadow-sm" placeholder="Ex: Carlos Silva (csilva@indra.com)">
+                                    </div>
+                                    <p class="text-xs text-indigo-600 mt-2 flex items-center gap-1"><i class="fas fa-info-circle"></i> O time de Learning entrará em contato com este profissional para mapeamento do conteúdo.</p>
+                                </div>
+                            </div>
+
+                            <!-- Upload de Arquivos -->
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-2">Anexos de Apoio (Opcional)</label>
+                                <p class="text-xs text-slate-500 mb-3">Insira arquivos que ajudem o time de design instrucional (Ex: Apresentações, documentação de processos, PDIs).</p>
+                                <div class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:bg-slate-50 hover:border-indra-cyan transition-colors cursor-pointer group bg-white">
+                                    <div class="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:bg-indra-accent group-hover:text-indra-cyan transition-colors">
+                                        <i class="fas fa-cloud-upload-alt text-xl text-slate-400 group-hover:text-indra-cyan"></i>
+                                    </div>
+                                    <p class="text-sm text-slate-600 font-medium"><span class="text-indra-cyan">Clique para fazer upload</span> ou arraste e solte</p>
+                                    <p class="text-xs text-slate-400 mt-1">PDF, PPTX, DOCX ou MP4 (Máx. 50MB)</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botão de Ação -->
+                        <div class="pt-6 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-4">
+                            <p class="text-sm text-slate-500"><i class="fas fa-lock text-slate-400 mr-1"></i> Campos com asterisco ou seleção obrigatória são necessários para análise.</p>
+                            <div class="flex gap-4 w-full sm:w-auto">
+                                <button type="button" onclick="navigate('dashboard')" class="hidden sm:block px-6 py-3.5 text-slate-600 font-semibold hover:bg-slate-100 rounded-lg transition-colors">Cancelar</button>
+                                <button type="submit" id="btn-submit" class="w-full sm:w-auto px-8 py-3.5 bg-indra-navy hover:bg-indra-cyan text-white font-bold rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-cyan-500/30 flex items-center justify-center gap-3 group">
+                                    <span class="tracking-wide">Enviar Solicitação à HR</span>
+                                    <i class="fas fa-paper-plane group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- ================= VIEW 5: CURSOS E TREINAMENTO ================= -->
+            <section id="view-courses" class="view-section max-w-7xl mx-auto">
+
+                <!-- Banner Superior com XP dinâmico -->
+                <div class="bg-gradient-to-r from-indra-navy via-[#003d6b] to-indigo-900 rounded-2xl p-8 lg:p-10 text-white shadow-xl mb-8 relative overflow-hidden">
+                    <div class="absolute inset-0 opacity-10" style="background-image:radial-gradient(circle at 20% 50%, #00A1C9 0%, transparent 50%), radial-gradient(circle at 80% 20%, #6366f1 0%, transparent 40%);"></div>
+                    <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                        <div class="max-w-xl">
+                            <span class="bg-indra-cyan/20 border border-indra-cyan/40 text-indra-cyan text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-3 inline-block backdrop-blur-sm">Plataforma L&D</span>
+                            <h1 class="text-3xl lg:text-4xl font-bold font-heading mb-3">Catálogo de Cursos & Treinamentos</h1>
+                            <p class="text-indigo-200 text-sm">Explore trilhas de liderança, tecnologia e soft skills. Cada aula concluída gera XP e desbloqueia badges exclusivas.</p>
+                        </div>
+                        <!-- XP Card inline -->
+                        <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-5 min-w-[240px]">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="level-badge w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg" id="banner-level-badge">4</div>
+                                <div>
+                                    <p class="text-white font-bold text-sm" id="banner-level-name">Especialista</p>
+                                    <p class="text-indigo-300 text-xs" id="banner-xp-label">2.450 / 3.000 XP</p>
+                                </div>
+                            </div>
+                            <div class="w-full bg-white/20 rounded-full h-2 mb-1">
+                                <div class="bg-indra-cyan h-2 rounded-full xp-bar-fill" id="banner-xp-bar" style="width: 82%"></div>
+                            </div>
+                            <p class="text-indigo-300 text-[10px] text-right">550 XP para o próximo nível</p>
+                        </div>
+                    </div>
+                    <i class="fas fa-graduation-cap absolute -right-8 -bottom-8 text-9xl text-white opacity-5"></i>
+                </div>
+
+                <!-- Stats Cards + Streak -->
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+                    <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex items-center gap-3 col-span-1">
+                        <div class="w-10 h-10 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center shrink-0"><i class="fas fa-check-circle text-lg"></i></div>
+                        <div>
+                            <span class="text-[10px] text-slate-500 block uppercase tracking-wide">Concluídos</span>
+                            <span class="font-bold text-slate-800" id="stats-completed">0 cursos</span>
+                        </div>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex items-center gap-3 col-span-1">
+                        <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center shrink-0"><i class="fas fa-clock text-lg"></i></div>
+                        <div>
+                            <span class="text-[10px] text-slate-500 block uppercase tracking-wide">Horas</span>
+                            <span class="font-bold text-slate-800" id="stats-hours">14h</span>
+                        </div>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex items-center gap-3 col-span-1">
+                        <div class="w-10 h-10 rounded-full bg-amber-50 text-amber-500 flex items-center justify-center shrink-0"><i class="fas fa-medal text-lg"></i></div>
+                        <div>
+                            <span class="text-[10px] text-slate-500 block uppercase tracking-wide">Badges</span>
+                            <span class="font-bold text-slate-800" id="stats-badges">4 Badges</span>
+                        </div>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex items-center gap-3 col-span-1">
+                        <div class="w-10 h-10 rounded-full bg-purple-50 text-purple-500 flex items-center justify-center shrink-0"><i class="fas fa-bolt text-lg"></i></div>
+                        <div>
+                            <span class="text-[10px] text-slate-500 block uppercase tracking-wide">XP Total</span>
+                            <span class="font-bold text-indra-cyan" id="stats-xp-sidebar">2.450 XP</span>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-br from-orange-500 to-red-500 p-4 rounded-xl shadow-sm flex items-center gap-3 col-span-1 cursor-pointer" onclick="showStreakModal()">
+                        <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center shrink-0 streak-fire"><i class="fas fa-fire text-white text-xl"></i></div>
+                        <div>
+                            <span class="text-[10px] text-orange-100 block uppercase tracking-wide">Streak</span>
+                            <span class="font-bold text-white" id="stats-streak">7 dias 🔥</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Layout: Catálogo + Gamification Sidebar -->
+                <div class="flex flex-col xl:flex-row gap-8">
+
+                    <!-- Coluna principal: busca + grid de cursos -->
+                    <div class="flex-1 min-w-0">
+                        <!-- Barra de Pesquisa e Filtros -->
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                            <div class="flex items-center bg-slate-100 rounded-lg px-4 py-2.5 border border-transparent focus-within:border-indra-cyan focus-within:bg-white w-full sm:max-w-xs transition-all">
+                                <i class="fas fa-search text-slate-400 mr-2"></i>
+                                <input type="text" id="course-search" oninput="filterCourses()" placeholder="Pesquisar curso..." class="bg-transparent border-none focus:outline-none text-sm text-slate-700 w-full">
+                            </div>
+                            <div class="flex flex-wrap gap-2" id="category-filters"></div>
+                        </div>
+
+                        <!-- Grid de Cards -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 gap-5" id="courses-grid"></div>
+                    </div>
+
+                    <!-- Coluna lateral: Gamificação -->
+                    <div class="w-full xl:w-80 flex flex-col gap-6 shrink-0">
+
+                        <!-- Painel de Nível -->
+                        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                            <div class="p-5 border-b border-gray-50 flex items-center justify-between">
+                                <h3 class="font-bold text-slate-800 font-heading">Seu Progresso</h3>
+                                <button onclick="showBadgesModal()" class="text-xs text-indra-cyan font-bold hover:underline">Ver tudo</button>
+                            </div>
+                            <div class="p-5">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <div class="level-badge w-14 h-14 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg shrink-0" id="sidebar-level-badge">4</div>
+                                    <div class="flex-1">
+                                        <p class="font-bold text-indra-navy text-sm" id="sidebar-level-name">Especialista</p>
+                                        <p class="text-xs text-slate-500 mb-1.5" id="sidebar-xp-label">2.450 / 3.000 XP</p>
+                                        <div class="w-full bg-slate-100 rounded-full h-2">
+                                            <div class="bg-gradient-to-r from-indra-navy to-indra-cyan h-2 rounded-full xp-bar-fill" id="sidebar-xp-bar" style="width:82%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Mini badges grid -->
+                                <div class="grid grid-cols-4 gap-2" id="mini-badges-grid"></div>
+                            </div>
+                        </div>
+
+                        <!-- Leaderboard -->
+                        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                            <div class="p-5 border-b border-gray-50 flex items-center justify-between">
+                                <h3 class="font-bold text-slate-800 font-heading flex items-center gap-2"><i class="fas fa-trophy text-amber-400"></i> Ranking da Semana</h3>
+                                <span class="text-[10px] bg-emerald-100 text-emerald-700 font-bold px-2 py-0.5 rounded-full">AO VIVO</span>
+                            </div>
+                            <div class="divide-y divide-gray-50" id="leaderboard-list"></div>
+                        </div>
+
+                        <!-- Missões Semanais -->
+                        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                            <div class="p-5 border-b border-gray-50">
+                                <h3 class="font-bold text-slate-800 font-heading flex items-center gap-2"><i class="fas fa-tasks text-indra-cyan"></i> Missões da Semana</h3>
+                            </div>
+                            <div class="p-5 space-y-4" id="missions-list"></div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= VIEW 6: PLAYER DE CURSO INTERATIVO ================= -->
+            <section id="view-player" class="view-section max-w-7xl mx-auto">
+                <!-- Cabeçalho do Player -->
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                    <button onclick="backToCourses()" class="flex items-center gap-2 text-slate-500 hover:text-indra-cyan font-semibold transition-colors">
+                        <i class="fas fa-arrow-left"></i> Voltar para Cursos
+                    </button>
+                    <div>
+                        <h2 class="text-2xl font-bold text-indra-navy font-heading" id="player-course-title">Nome do Curso</h2>
+                    </div>
+                </div>
+
+                <!-- Layout Principal -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Área do Player de Vídeo e Abas (Esquerda) -->
+                    <div class="lg:col-span-2 space-y-6">
+                        <!-- Reprodutor de Vídeo Simulado -->
+                        <div class="bg-indra-dark rounded-2xl overflow-hidden shadow-xl aspect-video relative group">
+                            <!-- Background simulado -->
+                            <div class="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-slate-900 via-indra-navy to-slate-900 text-white select-none">
+                                <div class="w-20 h-20 bg-indra-cyan rounded-full flex items-center justify-center text-white cursor-pointer hover:bg-cyan-500 hover:scale-105 transition-all shadow-lg active:scale-95" id="video-play-btn" onclick="toggleVideoPlayback()">
+                                    <i class="fas fa-play text-3xl ml-1" id="video-play-icon"></i>
+                                </div>
+                                <p class="text-sm text-slate-400 mt-4 font-medium" id="video-status-text">Vídeo Pausado. Clique para iniciar.</p>
+                                <span class="absolute bottom-20 text-xs text-indigo-300 font-semibold tracking-wider uppercase px-3 py-1 bg-white/10 rounded-full backdrop-blur-sm" id="video-lesson-tag">Módulo 2 • Aula 2</span>
+                            </div>
+
+                            <!-- Controles do Vídeo Simulado (Barra Inferior) -->
+                            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent p-4 flex flex-col gap-2 opacity-100 group-hover:opacity-100 transition-opacity">
+                                <!-- Barra de progresso do vídeo -->
+                                <div class="w-full bg-white/20 h-1.5 rounded-full cursor-pointer relative" onclick="seekVideo(event)">
+                                    <div class="bg-indra-cyan h-1.5 rounded-full w-0 transition-all duration-300" id="video-progress-bar"></div>
+                                </div>
+                                <!-- Botões -->
+                                <div class="flex justify-between items-center text-white text-xs">
+                                    <div class="flex items-center gap-4">
+                                        <button onclick="toggleVideoPlayback()" class="hover:text-indra-cyan text-base" type="button"><i class="fas fa-play" id="video-control-play-icon"></i></button>
+                                        <span id="video-time-indicator">00:00 / 12:45</span>
+                                    </div>
+                                    <div class="flex items-center gap-4">
+                                        <button onclick="changeVideoSpeed()" class="hover:text-indra-cyan font-bold" id="video-speed-btn" type="button">1.0x</button>
+                                        <button onclick="toggleMuteVideo()" class="hover:text-indra-cyan text-base" type="button"><i class="fas fa-volume-up" id="video-volume-icon"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Barra de Ações Rápidas da Aula -->
+                        <div class="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-100 shadow-sm">
+                            <h3 class="font-bold text-slate-800 text-lg" id="player-lesson-title">Pensamento crítico e vieses cognitivos</h3>
+                            <button onclick="completeActiveLesson()" class="bg-indigo-50 hover:bg-emerald-50 text-indigo-600 hover:text-emerald-600 border border-indigo-200 hover:border-emerald-300 px-5 py-2.5 rounded-lg font-bold transition-all flex items-center gap-2" id="btn-complete-lesson" type="button">
+                                <i class="far fa-check-circle text-lg" id="btn-complete-icon"></i> <span id="btn-complete-text">Marcar como Concluído</span>
+                            </button>
+                        </div>
+
+                        <!-- Abas Interativas (Descrição, Quiz, Comentários, Materiais) -->
+                        <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+                            <!-- Navegação das Abas -->
+                            <div class="flex border-b border-gray-100 bg-slate-50/50">
+                                <button onclick="selectPlayerTab('desc')" id="tab-desc" class="tab-btn px-6 py-4 text-sm font-medium text-slate-500 hover:text-slate-800 border-b-2 border-transparent transition-all" type="button">Sobre o Curso</button>
+                                <button onclick="selectPlayerTab('quiz')" id="tab-quiz" class="tab-btn px-6 py-4 text-sm font-medium text-slate-500 hover:text-slate-800 border-b-2 border-transparent transition-all flex items-center gap-1.5" type="button">Quiz <span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-1.5 py-0.5 rounded-full" id="quiz-badge">1</span></button>
+                                <button onclick="selectPlayerTab('comments')" id="tab-comments" class="tab-btn px-6 py-4 text-sm font-medium text-slate-500 hover:text-slate-800 border-b-2 border-transparent transition-all" type="button">Dúvidas & Fórum (<span id="comments-count">3</span>)</button>
+                                <button onclick="selectPlayerTab('materials')" id="tab-materials" class="tab-btn px-6 py-4 text-sm font-medium text-slate-500 hover:text-slate-800 border-b-2 border-transparent transition-all" type="button">Materiais</button>
+                            </div>
+
+                            <!-- Conteúdo das Abas -->
+                            <div class="p-6">
+                                <!-- Aba: Descrição -->
+                                <div id="pane-desc" class="player-tab-pane space-y-4">
+                                    <div>
+                                        <h4 class="font-bold text-slate-800 mb-1">O que você vai aprender:</h4>
+                                        <p class="text-sm text-slate-600 leading-relaxed" id="player-course-desc">Aprenda a analisar dados, estruturar problemas complexos de negócios e avaliar riscos para mitigar vieses cognitivos e tomar decisões sob pressão.</p>
+                                    </div>
+                                    <div class="border-t border-gray-100 pt-4 flex items-center gap-4">
+                                        <img src="https://ui-avatars.com/api/?name=Rodrigo+Silva&background=00A1C9&color=fff" class="w-10 h-10 rounded-full" alt="Instrutor">
+                                        <div>
+                                            <p class="text-sm font-bold text-slate-800">Instrutor: Rodrigo Silva</p>
+                                            <p class="text-xs text-slate-500">Diretor de Operações e Inovação na Indra Latam</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Aba: Quiz -->
+                                <div id="pane-quiz" class="player-tab-pane hidden space-y-6">
+                                    <div id="quiz-unsolved">
+                                        <span class="text-xs font-bold text-amber-600 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-full uppercase tracking-wider">Desafio de Fixação</span>
+                                        <h4 class="font-bold text-slate-800 text-lg mt-3 mb-4" id="quiz-question-text">Pergunta do Quiz...</h4>
+                                        
+                                        <div class="space-y-3" id="quiz-options-container">
+                                            <!-- Opções de resposta dinâmicas -->
+                                        </div>
+
+                                        <div class="mt-6 flex justify-end">
+                                            <button onclick="submitQuizAnswer()" class="bg-indra-navy hover:bg-indra-cyan text-white px-6 py-2.5 rounded-lg font-bold transition-colors shadow-md" type="button">
+                                                Enviar Resposta
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Resultado do Quiz -->
+                                    <div id="quiz-result" class="hidden text-center py-6 animate-fade-in-up">
+                                        <div id="quiz-result-icon-container" class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                                            <i class="fas text-3xl" id="quiz-result-icon"></i>
+                                        </div>
+                                        <h4 class="text-xl font-bold text-slate-800 mb-2" id="quiz-result-title">Parabéns!</h4>
+                                        <p class="text-sm text-slate-600 max-w-md mx-auto mb-6" id="quiz-result-message">Feedback da resposta...</p>
+                                        <button onclick="resetQuiz()" class="text-xs font-semibold text-indigo-600 hover:text-indra-cyan transition-colors" id="btn-retry-quiz" type="button">Tentar Novamente</button>
+                                    </div>
+                                </div>
+
+                                <!-- Aba: Comentários -->
+                                <div id="pane-comments" class="player-tab-pane hidden space-y-6">
+                                    <!-- Formulário de Comentário -->
+                                    <div class="flex gap-4 items-start">
+                                        <img src="https://ui-avatars.com/api/?name=Jane+Doe&background=002B49&color=fff" class="w-10 h-10 rounded-full border border-gray-100 shadow-sm" alt="User">
+                                        <div class="flex-1 space-y-3">
+                                            <textarea id="comment-input" required rows="3" class="w-full bg-slate-50 border border-gray-200 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indra-cyan focus:bg-white outline-none transition-all resize-none shadow-inner" placeholder="Tire sua dúvida ou compartilhe um insight sobre a aula..."></textarea>
+                                            <div class="flex justify-end">
+                                                <button onclick="postNewComment()" class="bg-indigo-50 hover:bg-indra-cyan hover:text-white text-indigo-600 px-5 py-2 rounded-lg text-xs font-bold transition-all border border-indigo-100 flex items-center gap-2" type="button">
+                                                    <i class="fas fa-paper-plane"></i> Publicar Comentário
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Lista de Discussão -->
+                                    <div class="divide-y divide-gray-100 pt-4 space-y-4" id="comments-list-container">
+                                        <!-- Gerado via JS -->
+                                    </div>
+                                </div>
+
+                                <!-- Aba: Materiais -->
+                                <div id="pane-materials" class="player-tab-pane hidden space-y-4">
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <a href="#" onclick="alert('Download iniciado!'); return false;" class="p-4 border border-gray-100 rounded-xl hover:border-indra-cyan/30 flex items-center justify-between group transition-colors bg-slate-50 hover:bg-white cursor-pointer">
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-10 h-10 bg-rose-50 text-rose-500 rounded-lg flex items-center justify-center text-lg"><i class="far fa-file-pdf"></i></div>
+                                                <div>
+                                                    <span class="text-sm font-bold text-slate-800 block">Slides da Apresentação</span>
+                                                    <span class="text-xs text-slate-500">PDF • 4.2 MB</span>
+                                                </div>
+                                            </div>
+                                            <i class="fas fa-download text-slate-400 group-hover:text-indra-cyan transition-colors"></i>
+                                        </a>
+                                        <a href="#" onclick="alert('Download iniciado!'); return false;" class="p-4 border border-gray-100 rounded-xl hover:border-indra-cyan/30 flex items-center justify-between group transition-colors bg-slate-50 hover:bg-white cursor-pointer">
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-10 h-10 bg-indigo-50 text-indigo-500 rounded-lg flex items-center justify-center text-lg"><i class="far fa-file-alt"></i></div>
+                                                <div>
+                                                    <span class="text-sm font-bold text-slate-800 block">Exercício de Apoio</span>
+                                                    <span class="text-xs text-slate-500">DOCX • 1.5 MB</span>
+                                                </div>
+                                            </div>
+                                            <i class="fas fa-download text-slate-400 group-hover:text-indra-cyan transition-colors"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Menu Lateral de Aulas do Curso (Direita) -->
+                    <div class="w-full lg:w-1/3">
+                        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden sticky top-24">
+                            <div class="p-6 bg-slate-50/50 border-b border-gray-100">
+                                <h3 class="font-bold text-slate-800 font-heading mb-3">Conteúdo do Curso</h3>
+                                <div class="flex justify-between text-xs text-slate-500 mb-2 font-medium">
+                                    <span>Progresso do Curso</span>
+                                    <span class="font-bold text-indra-cyan" id="player-course-progress-percent">0%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-indra-cyan h-2 rounded-full transition-all duration-500" id="player-course-progress-bar" style="width: 0%"></div>
+                                </div>
+                            </div>
+
+                            <!-- Lista de Módulos Accordion -->
+                            <div class="divide-y divide-gray-100" id="player-modules-accordion">
+                                <!-- Preenchido dinamicamente via JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Scripts da SPA e Lógica de UI -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            navigate('tracks'); // Inicializado na tela de Trilhas
+            initCoursesCatalog();
+        });
+
+        // Toggle do Menu Mobile
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('opacity-0');
+                setTimeout(() => overlay.classList.add('hidden'), 300);
+            }
+        }
+
+        // Navegação SPA Principal
+        function navigate(viewId) {
+            document.querySelectorAll('.view-section').forEach(el => {
+                el.classList.remove('active');
+                setTimeout(() => { if(!el.classList.contains('active')) el.style.display = 'none'; }, 400);
+            });
+            
+            document.querySelectorAll('.nav-item').forEach(el => {
+                el.classList.remove('active', 'bg-slate-50', 'text-indra-cyan');
+            });
+            
+            setTimeout(() => {
+                const activeView = document.getElementById('view-' + viewId);
+                activeView.style.display = 'block';
+                setTimeout(() => activeView.classList.add('active'), 20);
+                document.getElementById('main-scroll-area').scrollTop = 0;
+            }, 300);
+
+            const activeNav = document.getElementById('nav-' + viewId);
+            if(activeNav) activeNav.classList.add('active', 'bg-slate-50');
+            if(window.innerWidth < 1024) toggleMobileMenu();
+            
+            if(viewId === 'request') resetFormStateOnly(); 
+        }
+
+        // Lógica de Toggle do Acordeão de Trilhas
+        function toggleModule(modId) {
+            const modContent = document.getElementById(modId);
+            const modHeader = modContent.previousElementSibling;
+            
+            if (modContent.classList.contains('open')) {
+                modContent.classList.remove('open');
+                modHeader.classList.remove('active');
+            } else {
+                // Opcional: Fechar outros (acordeão exclusivo)
+                // document.querySelectorAll('.module-content').forEach(el => {
+                //     el.classList.remove('open');
+                //     el.previousElementSibling.classList.remove('active');
+                // });
+                modContent.classList.add('open');
+                modHeader.classList.add('active');
+            }
+        }
+
+        // Toggle para campos do Formulário (Equipe vs Individual)
+        function toggleRequestType() {
+            const isIndividual = document.querySelector('input[name="requestType"][value="individual"]').checked;
+            const teamSizeGroup = document.getElementById('group-team-size');
+            const individualGroup = document.getElementById('group-individual-name');
+            const formSize = document.getElementById('form-size');
+            const formColaborador = document.getElementById('form-colaborador');
+
+            if (isIndividual) {
+                teamSizeGroup.classList.add('hidden');
+                individualGroup.classList.remove('hidden');
+                formSize.removeAttribute('required');
+                formColaborador.setAttribute('required', 'true');
+            } else {
+                teamSizeGroup.classList.remove('hidden');
+                individualGroup.classList.add('hidden');
+                formSize.setAttribute('required', 'true');
+                formColaborador.removeAttribute('required');
+            }
+        }
+
+        // Toggle para o campo SME
+        function toggleSmeInput() {
+            const select = document.getElementById('sme-select');
+            const inputGroup = document.getElementById('sme-input-group');
+            if (select.value === 'sim') {
+                inputGroup.classList.remove('hidden');
+                inputGroup.querySelector('input').setAttribute('required', 'true');
+            } else {
+                inputGroup.classList.add('hidden');
+                inputGroup.querySelector('input').removeAttribute('required');
+            }
+        }
+
+        // Simulação do Submit
+        function submitForm(event) {
+            event.preventDefault();
+            const btn = document.getElementById('btn-submit');
+            const originalContent = btn.innerHTML;
+            
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin text-xl"></i> <span class="tracking-wide ml-2">Processando...</span>';
+            btn.disabled = true;
+            btn.classList.add('opacity-80', 'cursor-not-allowed');
+
+            setTimeout(() => {
+                document.getElementById('training-form').style.display = 'none';
+                const successMsg = document.getElementById('success-message');
+                successMsg.classList.remove('hidden');
+                successMsg.classList.add('active'); 
+                
+                btn.innerHTML = originalContent;
+                btn.disabled = false;
+                btn.classList.remove('opacity-80', 'cursor-not-allowed');
+                document.getElementById('view-request').scrollIntoView({ behavior: 'smooth' });
+            }, 1500);
+        }
+
+        function resetForm() {
+            document.getElementById('training-form').reset();
+            resetFormStateOnly();
+            document.getElementById('training-form').style.display = 'block';
+            document.getElementById('success-message').classList.add('hidden');
+            document.getElementById('success-message').classList.remove('active');
+        }
+
+        function resetFormStateOnly() {
+            toggleRequestType();
+            toggleSmeInput();
+        }
+
+        // ================= DADOS E LÓGICA DE CURSOS =================
+        const COURSES_DATA = [
+            {
+                id: 'lideranca-indra',
+                title: 'Trilha para Líderes Indra',
+                instructor: 'Comissão Executiva Indra',
+                category: 'Liderança',
+                duration: '6h 30m',
+                lessonsCount: 15,
+                xp: 1500,
+                rating: 4.9,
+                cover: 'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=800&q=80',
+                description: 'Desenvolva habilidades críticas de liderança voltadas para a cultura da Indra. Este programa engloba comunicação eficaz, tomada de decisão estratégica, gestão de equipes de alta performance e liderança orientada aos valores corporativos.',
+                modules: [
+                    {
+                        title: 'Módulo 1: Comunicação para Líderes',
+                        lessons: [
+                            { id: 'l1-1', title: 'Comunicação adaptativa para diferentes perfis de colaboradores', type: 'podcast', duration: '12m', completed: true },
+                            { id: 'l1-2', title: 'Escuta ativa e escuta estratégica', type: 'pilula', duration: '8m', completed: true },
+                            { id: 'l1-3', title: 'Feedback contínuo e conversas difíceis', type: 'video', duration: '15m', completed: true },
+                            { id: 'l1-4', title: 'Comunicação em cenários de mudança', type: 'pilula', duration: '10m', completed: true },
+                            { id: 'l1-5', title: 'Storytelling para liderança', type: 'artigo', duration: '10m', completed: true },
+                            { id: 'l1-6', title: 'Gestão de conflitos e negociação', type: 'video', duration: '14m', completed: true }
+                        ]
+                    },
+                    {
+                        title: 'Módulo 2: Tomada de Decisão',
+                        lessons: [
+                            { id: 'l2-1', title: 'Tomada de decisão sob pressão', type: 'interativo', duration: '20m', completed: true },
+                            { id: 'l2-2', title: 'Pensamento crítico e vieses cognitivos', type: 'video', duration: '25m', completed: false, isCurrent: true, quiz: {
+                                question: 'Qual dos seguintes é um exemplo clássico de "viés de confirmação" na tomada de decisão gerencial?',
+                                options: [
+                                    'Procurar ativamente apenas dados que apoiam sua hipótese inicial e ignorar dados contrários.',
+                                    'Tomar decisões baseando-se unicamente nas opiniões da liderança sênior.',
+                                    'Avaliar todas as alternativas disponíveis de forma matemática e imparcial.',
+                                    'Adiar a decisão por medo de cometer erros operacionais.'
+                                ],
+                                correctIndex: 0,
+                                feedbackCorrect: 'Correto! O viés de confirmação nos faz buscar e valorizar apenas informações que validam nossas crenças pré-existentes.',
+                                feedbackIncorrect: 'Incorreto. O viés de confirmação envolve especificamente a filtragem seletiva de informações para validar uma ideia inicial.'
+                            } },
+                            { id: 'l2-3', title: 'Análise de riscos e impactos', type: 'caso', duration: '20m', completed: false },
+                            { id: 'l2-4', title: 'Data-driven decision making', type: 'caso', duration: '25m', completed: false },
+                            { id: 'l2-5', title: 'Priorização, trade-offs e resolução estruturada', type: 'simulador', duration: '25m', completed: false }
+                        ]
+                    },
+                    {
+                        title: 'Módulo 3: Gestão de Equipes',
+                        lessons: [
+                            { id: 'l3-1', title: 'Formação e desenvolvimento de equipes', type: 'video', duration: '15m', completed: false },
+                            { id: 'l3-2', title: 'Delegação estratégica', type: 'video', duration: '18m', completed: false },
+                            { id: 'l3-3', title: 'Engajamento e motivação', type: 'video', duration: '15m', completed: false },
+                            { id: 'l3-4', title: 'Gestão de desempenho', type: 'podcast', duration: '18m', completed: false },
+                            { id: 'l3-5', title: 'Gestão de talentos', type: 'artigo', duration: '14m', completed: false },
+                            { id: 'l3-6', title: 'Liderança situacional', type: 'video', duration: '20m', completed: false },
+                            { id: 'l3-7', title: 'Segurança psicológica', type: 'video', duration: '22m', completed: false }
+                        ]
+                    },
+                    {
+                        title: 'Módulo 4: Cultura Organizacional',
+                        lessons: [
+                            { id: 'l4-1', title: 'Papel da liderança na cultura', type: 'video', duration: '12m', completed: false },
+                            { id: 'l4-2', title: 'Valores organizacionais na prática', type: 'artigo', duration: '10m', completed: false },
+                            { id: 'l4-3', title: 'Gestão da mudança', type: 'video', duration: '15m', completed: false },
+                            { id: 'l4-4', title: 'Diversidade e inclusão', type: 'video', duration: '18m', completed: false },
+                            { id: 'l4-5', title: 'Ética e compliance', type: 'video', duration: '15m', completed: false },
+                            { id: 'l4-6', title: 'Experiência do colaborador', type: 'podcast', duration: '12m', completed: false },
+                            { id: 'l4-7', title: 'Cultura de aprendizagem contínua', type: 'artigo', duration: '10m', completed: false }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'seguranca-owasp',
+                title: 'Desenvolvimento Seguro com OWASP Top 10',
+                instructor: 'Carlos Daniel (Cybersecurity Lead)',
+                category: 'Tecnologia',
+                duration: '5h 15m',
+                lessonsCount: 4,
+                xp: 400,
+                rating: 4.8,
+                cover: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=800&q=80',
+                description: 'Capacitação prática em segurança de software baseada nas 10 principais vulnerabilidades da OWASP. Aprenda a blindar as aplicações do Grupo Indra contra ataques cibernéticos.',
+                modules: [
+                    {
+                        title: 'Módulo 1: Fundamentos & Injeções',
+                        lessons: [
+                            { id: 's1-1', title: 'Introdução ao OWASP Top 10 na Indra', type: 'video', duration: '15m', completed: false },
+                            { id: 's1-2', title: 'Mitigando SQL Injection e Broken Auth', type: 'video', duration: '30m', completed: false, quiz: {
+                                question: 'Qual é a melhor prática para prevenir ataques de injeção de SQL?',
+                                options: [
+                                    'Utilizar Prepared Statements (Consultas Parametrizadas).',
+                                    'Validar a entrada do usuário apenas no lado do cliente (Client-side).',
+                                    'Criptografar todo o banco de dados.',
+                                    'Bloquear endereços IP suspeitos no Firewall.'
+                                ],
+                                correctIndex: 0,
+                                feedbackCorrect: 'Excelente! Prepared Statements garantem que o banco de dados trate a entrada do usuário como dados, não comandos executáveis.',
+                                feedbackIncorrect: 'Incorreto. A criptografia ou validação apenas no cliente não impedem que payloads maliciosos sejam interpretados pelo banco. Use consultas parametrizadas.'
+                            } }
+                        ]
+                    },
+                    {
+                        title: 'Módulo 2: Vulnerabilidades Avançadas',
+                        lessons: [
+                            { id: 's2-1', title: 'Segurança em APIs RESTful', type: 'video', duration: '25m', completed: false },
+                            { id: 's2-2', title: 'Configurações incorretas e XSS', type: 'video', duration: '20m', completed: false }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'metodologias-ageis',
+                title: 'Metodologias Ágeis no Grupo Indra',
+                instructor: 'Ana Clara Melo (Agile Coach)',
+                category: 'Metodologias',
+                duration: '3h 45m',
+                lessonsCount: 2,
+                xp: 200,
+                rating: 4.7,
+                cover: 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&w=800&q=80',
+                description: 'Entenda como o framework Scrum, Kanban e práticas de agilidade em escala são aplicadas na gestão de projetos internos da Indra, acelerando entregas e maximizando valor.',
+                modules: [
+                    {
+                        title: 'Módulo 1: Mindset Ágil & Scrum',
+                        lessons: [
+                            { id: 'ma1-1', title: 'Os 4 valores do Manifesto Ágil', type: 'video', duration: '12m', completed: false },
+                            { id: 'ma1-2', title: 'Papéis no Scrum: PO, Scrum Master e Devs', type: 'video', duration: '25m', completed: false, quiz: {
+                                question: 'No Scrum, quem é o principal responsável por gerenciar e priorizar o Product Backlog?',
+                                options: [
+                                    'O Product Owner (PO).',
+                                    'O Scrum Master.',
+                                    'O Gerente de Projetos.',
+                                    'O Time de Desenvolvimento.'
+                                ],
+                                correctIndex: 0,
+                                feedbackCorrect: 'Correto! O PO representa os interesses do negócio e prioriza o backlog de produto para maximizar o valor de entrega.',
+                                feedbackIncorrect: 'Incorreto. O Scrum Master facilita o processo, mas a definição e priorização das histórias de usuário no backlog é papel do Product Owner.'
+                            } }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'ia-generativa',
+                title: 'IA Generativa e Prompt Engineering',
+                instructor: 'Roberto Garcia (AI Specialist)',
+                category: 'Tecnologia',
+                duration: '6h 00m',
+                lessonsCount: 3,
+                xp: 300,
+                rating: 4.9,
+                cover: 'https://images.unsplash.com/photo-1677442136019-21780efad99a?auto=format&fit=crop&w=800&q=80',
+                description: 'Descubra como integrar ferramentas de Inteligência Artificial ao seu fluxo de trabalho diário. Domine engenharia de prompts para desenvolvimento de software, análise de dados e produtividade.',
+                modules: [
+                    {
+                        title: 'Módulo 1: Fundamentos de LLMs',
+                        lessons: [
+                            { id: 'ia1-1', title: 'O que são LLMs e redes neurais transformer', type: 'video', duration: '20m', completed: false },
+                            { id: 'ia1-2', title: 'Segurança de dados no uso corporativo de IAs', type: 'video', duration: '18m', completed: false }
+                        ]
+                    },
+                    {
+                        title: 'Módulo 2: Técnicas de Prompting',
+                        lessons: [
+                            { id: 'ia2-1', title: 'Few-Shot, Zero-Shot e Chain-of-Thought', type: 'video', duration: '30m', completed: false, quiz: {
+                                question: 'O que caracteriza a técnica de prompting "Chain-of-Thought" (Cadeia de Pensamento)?',
+                                options: [
+                                    'Pedir à IA para resolver o problema passo a passo, explicando o raciocínio intermediário.',
+                                    'Fornecer vários exemplos de entradas e saídas antes da pergunta final.',
+                                    'Fazer perguntas curtas e diretas para economizar tokens.',
+                                    'Encadear vários prompts diferentes em conversas separadas.'
+                                ],
+                                correctIndex: 0,
+                                feedbackCorrect: 'Correto! O Chain-of-Thought incentiva o modelo a decompor o raciocínio em etapas lógicas, aumentando a precisão em problemas complexos.',
+                                feedbackIncorrect: 'Incorreto. Fornecer exemplos é a técnica de Few-shot prompting. O Chain-of-Thought envolve especificamente o raciocínio passo a passo.'
+                            } }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'comunicacao-nv',
+                title: 'Comunicação Não-Violenta no Trabalho',
+                instructor: 'Helena Costa (Human Resources Director)',
+                category: 'Soft Skills',
+                duration: '4h 20m',
+                lessonsCount: 2,
+                xp: 200,
+                rating: 4.9,
+                cover: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=800&q=80',
+                description: 'Práticas de Comunicação Não-Violenta (CNV) focadas no ambiente de trabalho corporativo. Aprenda a expressar necessidades de forma clara, lidar com feedbacks de forma saudável e mediar conflitos.',
+                modules: [
+                    {
+                        title: 'Módulo 1: Os Quatro Pilares da CNV',
+                        lessons: [
+                            { id: 'cnv1-1', title: 'Observação vs. Julgamento no dia a dia', type: 'video', duration: '20m', completed: false },
+                            { id: 'cnv1-2', title: 'Sentimentos, Necessidades e Pedidos práticos', type: 'video', duration: '25m', completed: false, quiz: {
+                                question: 'Qual das alternativas abaixo representa um pedido de forma clara e não-violenta?',
+                                options: [
+                                    '"Eu me sinto sobrecarregada com esse cronograma. Você poderia, por favor, me ajudar a repriorizar essas tarefas hoje?"',
+                                    '"Você precisa parar de me mandar tantas demandas toda hora."',
+                                    '"Se as coisas continuarem assim, a equipe inteira vai falhar no projeto."',
+                                    '"Gostaria que você fosse mais colaborativo com a equipe daqui para frente."'
+                                ],
+                                correctIndex: 0,
+                                feedbackCorrect: 'Excelente! O pilar do Pedido deve ser específico, realizável, positivo e baseado em sentimentos e necessidades reais.',
+                                feedbackIncorrect: 'Incorreto. As outras opções contêm julgamentos, exigências vagas ou tom de ameaça, o que viola os pilares da CNV.'
+                            } }
+                        ]
+                    }
+                ]
+            }
+        ];
+
+        const COMMENTS_DB = {
+            'l2-2': [
+                { author: 'Marcos Santos', role: 'Dev Team Lead', text: 'Excelente explicação sobre o viés de ancoragem. Vejo isso direto nas estimativas de prazos!', date: 'há 2 dias' },
+                { author: 'Juliana Vieira', role: 'Product Owner', text: 'Muito bom! Como mitigar isso na hora do planning?', date: 'há 1 dia' },
+                { author: 'Rodrigo Silva', role: 'Instrutor', text: 'Juliana, no planning, uma boa técnica é usar Planning Poker às cegas para evitar que a âncora do primeiro voto influencie os demais.', date: 'há 10 horas' }
+            ],
+            's1-2': [
+                { author: 'Felipe Rocha', role: 'Software Engineer', text: 'Sempre tive dúvidas sobre a real diferença entre query params normais e Prepared Statements, clareou muito!', date: 'há 3 dias' }
+            ],
+            'ia2-1': [
+                { author: 'Guilherme Souza', role: 'Dev Analyst', text: 'Tentei aplicar o Chain-of-Thought no prompt de análise de bugs e a resposta da IA ficou 10 vezes melhor!', date: 'há 5 dias' }
+            ]
+        };
+
+        // ========================= ESTADO GLOBAL =========================
+        let activeCourse = null;
+        let activeLesson = null;
+        let activeCategory = 'Todos';
+        let userXP = 2450;
+        let originalXP = 2450;
+        let userLevel = 4;
+        let userStreak = 7;
+        let completedLessonsSet = new Set(['l1-1', 'l1-2', 'l1-3', 'l1-4', 'l1-5', 'l1-6', 'l2-1']);
+        const XP_PER_LESSON = 100;
+        let videoPlaying = false;
+        let videoPlaybackInterval = null;
+        let videoProgress = 0;
+        let videoSpeed = 1.0;
+        let videoMuted = false;
+        let activePlayerTab = 'desc';
+        let referrerView = 'courses';
+
+        // ========================= SISTEMA DE GAMIFICAÇÃO =========================
+        const LEVELS = [
+            { level: 1, name: 'Aprendiz',      minXP: 0,    maxXP: 500,  color: '#6B7280' },
+            { level: 2, name: 'Praticante',    minXP: 500,  maxXP: 1000, color: '#10B981' },
+            { level: 3, name: 'Analista',      minXP: 1000, maxXP: 2000, color: '#3B82F6' },
+            { level: 4, name: 'Especialista',  minXP: 2000, maxXP: 3000, color: '#8B5CF6' },
+            { level: 5, name: 'Líder',         minXP: 3000, maxXP: 5000, color: '#F59E0B' },
+            { level: 6, name: 'Estrategista',  minXP: 5000, maxXP: 8000, color: '#EF4444' },
+            { level: 7, name: 'Embaixador',    minXP: 8000, maxXP: 99999, color: '#EC4899' },
+        ];
+
+        const BADGES_DATA = [
+            { id: 'first_lesson',   icon: '🎯', name: 'Primeiro Passo',     desc: 'Complete sua primeira aula',         xpReq: 100,  color: 'from-emerald-400 to-teal-500' },
+            { id: 'comm_master',    icon: '💬', name: 'Mestre da Comunicação', desc: 'Conclua o Módulo 1 completo',     condition: () => ['l1-1','l1-2','l1-3','l1-4','l1-5','l1-6'].every(id => completedLessonsSet.has(id)), color: 'from-blue-400 to-indigo-500' },
+            { id: 'decision_maker', icon: '⚡', name: 'Decisor Estratégico', desc: 'Conclua o Módulo 2 completo',        condition: () => ['l2-1','l2-2','l2-3','l2-4','l2-5'].every(id => completedLessonsSet.has(id)), color: 'from-amber-400 to-orange-500' },
+            { id: 'quiz_ace',       icon: '🏆', name: 'Quiz Ace',            desc: 'Acerte 3 quizzes seguidos',          xpReq: 1800, color: 'from-yellow-400 to-amber-500' },
+            { id: 'tech_ninja',     icon: '🔒', name: 'Tech Ninja',          desc: 'Inicie um curso de Tecnologia',      condition: () => completedLessonsSet.has('s1-1'), color: 'from-slate-600 to-slate-800' },
+            { id: 'agile_mind',     icon: '🔄', name: 'Mente Ágil',          desc: 'Conclua Metodologias Ágeis',         condition: () => completedLessonsSet.has('ma1-1') && completedLessonsSet.has('ma1-2'), color: 'from-green-400 to-emerald-600' },
+            { id: 'ai_pioneer',     icon: '🤖', name: 'Pioneiro em IA',      desc: 'Conclua o módulo de IA Generativa',  condition: () => completedLessonsSet.has('ia1-1') && completedLessonsSet.has('ia2-1'), color: 'from-violet-400 to-purple-600' },
+            { id: 'xp_5000',        icon: '💎', name: 'Diamante',           desc: 'Acumule 5.000 XP',                   xpReq: 5000, color: 'from-cyan-400 to-indigo-600' },
+        ];
+
+        const LEADERBOARD_DATA = [
+            { name: 'Ana Ferreira',  xp: 3800, avatar: 'Ana+Ferreira',  role: 'Tech Lead',     highlight: false },
+            { name: 'Carlos Lima',   xp: 3200, avatar: 'Carlos+Lima',   role: 'Dev Sênior',    highlight: false },
+            { name: 'Jane Doe',      xp: 2450, avatar: 'Jane+Doe',      role: 'Gestora',       highlight: true  },
+            { name: 'Marcos Santos', xp: 2100, avatar: 'Marcos+Santos', role: 'Team Lead',     highlight: false },
+            { name: 'Julia Neves',   xp: 1900, avatar: 'Julia+Neves',   role: 'Analista PO',   highlight: false },
+        ];
+
+        const MISSIONS_DATA = [
+            { id: 'm1', icon: 'fa-play',      text: 'Completar 1 aula',        xp: 100,  getProgress: () => completedLessonsSet.size,  goal: 1  },
+            { id: 'm2', icon: 'fa-fire',      text: 'Manter streak de 7 dias', xp: 300,  getProgress: () => userStreak,                goal: 7  },
+            { id: 'm3', icon: 'fa-star',      text: 'Acertar um quiz',         xp: 150,  getProgress: () => correctQuizzes,            goal: 1  },
+            { id: 'm4', icon: 'fa-layer-group',text:'Completar 10 aulas',      xp: 500,  getProgress: () => completedLessonsSet.size,  goal: 10 },
+        ];
+
+        let correctQuizzes = 0;
+
+        function getCurrentLevel() {
+            for (let i = LEVELS.length - 1; i >= 0; i--) {
+                if (userXP >= LEVELS[i].minXP) return LEVELS[i];
+            }
+            return LEVELS[0];
+        }
+
+        function getXPPercent() {
+            const lvl = getCurrentLevel();
+            const range = lvl.maxXP - lvl.minXP;
+            const progress = userXP - lvl.minXP;
+            return Math.min(Math.round((progress / range) * 100), 100);
+        }
+
+        function getEarnedBadges() {
+            return BADGES_DATA.filter(b => {
+                if (b.condition) return b.condition();
+                if (b.xpReq) return userXP >= b.xpReq;
+                return false;
+            });
+        }
+
+        function renderGamification() {
+            const lvl = getCurrentLevel();
+            const pct = getXPPercent();
+            const nextLvl = LEVELS.find(l => l.level === lvl.level + 1);
+            const xpToNext = nextLvl ? nextLvl.minXP - userXP : 0;
+
+            // Banner XP
+            const bannerBadge = document.getElementById('banner-level-badge');
+            const bannerName  = document.getElementById('banner-level-name');
+            const bannerLabel = document.getElementById('banner-xp-label');
+            const bannerBar   = document.getElementById('banner-xp-bar');
+            if (bannerBadge) bannerBadge.textContent = lvl.level;
+            if (bannerName)  bannerName.textContent  = lvl.name;
+            if (bannerLabel) bannerLabel.textContent = `${userXP.toLocaleString('pt-BR')} / ${(nextLvl ? nextLvl.minXP : lvl.maxXP).toLocaleString('pt-BR')} XP`;
+            if (bannerBar)   bannerBar.style.width   = `${pct}%`;
+
+            // Sidebar level
+            const sidebarBadge = document.getElementById('sidebar-level-badge');
+            const sidebarName  = document.getElementById('sidebar-level-name');
+            const sidebarLabel = document.getElementById('sidebar-xp-label');
+            const sidebarBar   = document.getElementById('sidebar-xp-bar');
+            if (sidebarBadge) sidebarBadge.textContent = lvl.level;
+            if (sidebarName)  sidebarName.textContent  = lvl.name;
+            if (sidebarLabel) sidebarLabel.textContent = `${userXP.toLocaleString('pt-BR')} / ${(nextLvl ? nextLvl.minXP : lvl.maxXP).toLocaleString('pt-BR')} XP`;
+            if (sidebarBar)   sidebarBar.style.width   = `${pct}%`;
+
+            // Mini badges
+            const miniBadgesGrid = document.getElementById('mini-badges-grid');
+            if (miniBadgesGrid) {
+                const earned = getEarnedBadges();
+                miniBadgesGrid.innerHTML = BADGES_DATA.map(b => {
+                    const isEarned = earned.some(e => e.id === b.id);
+                    return `<div class="badge-card ${isEarned ? 'earned' : 'locked'} bg-gradient-to-br ${isEarned ? b.color : 'from-gray-200 to-gray-300'} w-12 h-12 rounded-xl flex items-center justify-center text-xl shadow-sm" title="${b.name}" onclick="${isEarned ? `showBadgeDetail('${b.id}')` : ''}">\n${b.icon}\n</div>`;
+                }).join('');
+            }
+
+            // Stats
+            const statsXp = document.getElementById('stats-xp-sidebar');
+            if (statsXp) statsXp.textContent = `${userXP.toLocaleString('pt-BR')} XP`;
+            const statsBadges = document.getElementById('stats-badges');
+            if (statsBadges) { const n = getEarnedBadges().length; statsBadges.textContent = `${n} Badge${n !== 1 ? 's' : ''}`; }
+            const statsStreak = document.getElementById('stats-streak');
+            if (statsStreak) statsStreak.textContent = `${userStreak} dias 🔥`;
+
+            // Leaderboard
+            const leaderboardEl = document.getElementById('leaderboard-list');
+            if (leaderboardEl) {
+                const sorted = [...LEADERBOARD_DATA].map(p => p.name === 'Jane Doe' ? {...p, xp: userXP} : p).sort((a,b) => b.xp - a.xp);
+                leaderboardEl.innerHTML = sorted.map((p, idx) => {
+                    const medals = ['🥇','🥈','🥉'];
+                    const medal = idx < 3 ? medals[idx] : `#${idx+1}`;
+                    return `
+                        <div class="leaderboard-row flex items-center gap-3 px-5 py-3 ${p.highlight ? 'bg-indra-accent/30 border-l-2 border-indra-cyan' : ''}">
+                            <span class="text-lg w-8 text-center shrink-0">${medal}</span>
+                            <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(p.avatar)}&background=${p.highlight ? '002B49' : '00A1C9'}&color=fff&size=64" class="w-8 h-8 rounded-full shadow-sm shrink-0" alt="">
+                            <div class="flex-1 min-w-0">
+                                <p class="font-bold text-xs text-slate-800 truncate ${p.highlight ? 'text-indra-navy' : ''}">${p.name}${p.highlight ? ' (Você)' : ''}</p>
+                                <p class="text-[10px] text-slate-400">${p.role}</p>
+                            </div>
+                            <span class="text-xs font-bold text-indra-cyan shrink-0">${p.xp.toLocaleString('pt-BR')} XP</span>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // Missões
+            const missionsEl = document.getElementById('missions-list');
+            if (missionsEl) {
+                missionsEl.innerHTML = MISSIONS_DATA.map(m => {
+                    const progress = Math.min(m.getProgress(), m.goal);
+                    const pct = Math.round((progress / m.goal) * 100);
+                    const done = pct >= 100;
+                    return `
+                        <div class="space-y-1.5">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-7 h-7 rounded-lg ${done ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-500'} flex items-center justify-center text-xs">
+                                        <i class="fas ${done ? 'fa-check' : m.icon}"></i>
+                                    </div>
+                                    <span class="text-xs font-semibold ${done ? 'text-emerald-700 line-through' : 'text-slate-700'}">${m.text}</span>
+                                </div>
+                                <span class="text-[10px] font-bold ${done ? 'text-emerald-600' : 'text-indra-cyan'} bg-${done ? 'emerald' : 'indra-accent'} px-1.5 py-0.5 rounded">+${m.xp} XP</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="flex-1 bg-slate-100 rounded-full h-1.5">
+                                    <div class="${done ? 'bg-emerald-500' : 'bg-indra-cyan'} h-1.5 rounded-full xp-bar-fill" style="width:${pct}%"></div>
+                                </div>
+                                <span class="text-[10px] text-slate-400 shrink-0">${progress}/${m.goal}</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
+
+        function showBadgesModal() {
+            const earned = getEarnedBadges();
+            const modal = document.createElement('div');
+            modal.id = 'gamification-modal';
+            modal.className = 'fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4';
+            modal.innerHTML = `
+                <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-fade-in-up">
+                    <div class="bg-gradient-to-r from-indra-navy to-indigo-900 p-6 text-white flex justify-between items-center">
+                        <div>
+                            <h2 class="text-xl font-bold font-heading">Minhas Badges</h2>
+                            <p class="text-indigo-300 text-sm">${earned.length} de ${BADGES_DATA.length} desbloqueadas</p>
+                        </div>
+                        <button onclick="this.closest('#gamification-modal').remove()" class="text-white/60 hover:text-white text-2xl">&times;</button>
+                    </div>
+                    <div class="p-6 grid grid-cols-4 gap-4 max-h-80 overflow-y-auto">
+                        ${BADGES_DATA.map(b => {
+                            const isEarned = earned.some(e => e.id === b.id);
+                            return `
+                                <div class="badge-card ${isEarned ? 'earned' : 'locked'} flex flex-col items-center gap-2">
+                                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-br ${isEarned ? b.color : 'from-gray-200 to-gray-300'} flex items-center justify-center text-2xl shadow-md ${isEarned ? 'badge-pop' : ''}">${b.icon}</div>
+                                    <p class="text-[10px] font-bold text-center ${isEarned ? 'text-slate-700' : 'text-slate-400'}">${b.name}</p>
+                                    ${!isEarned ? `<p class="text-[9px] text-slate-400 text-center">${b.desc}</p>` : ''}
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+            modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+            document.body.appendChild(modal);
+        }
+
+        function showBadgeDetail(badgeId) {
+            const badge = BADGES_DATA.find(b => b.id === badgeId);
+            if (!badge) return;
+            showToast(`🏆 Badge: ${badge.name} — ${badge.desc}`, 'success');
+        }
+
+        function showStreakModal() {
+            showToast(`🔥 ${userStreak} dias de streak! Continue aprendendo amanhã para manter sua sequência!`, 'success');
+        }
+
+        function triggerLevelUp(newLevel) {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4';
+            modal.id = 'levelup-modal';
+            modal.innerHTML = `
+                <div class="relative bg-gradient-to-br from-indra-navy to-indigo-900 rounded-3xl shadow-2xl text-white text-center p-10 max-w-sm w-full overflow-hidden animate-fade-in-up">
+                    <div id="confetti-container" class="absolute inset-0 pointer-events-none overflow-hidden"></div>
+                    <div class="text-6xl mb-4 animate-bounce">⬆️</div>
+                    <p class="text-indra-cyan font-bold tracking-widest uppercase text-sm mb-2">Level Up!</p>
+                    <h2 class="text-4xl font-bold font-heading mb-2">${newLevel.name}</h2>
+                    <p class="text-indigo-300 mb-6">Você atingiu o nível ${newLevel.level}! Continue assim!</p>
+                    <button onclick="this.closest('#levelup-modal').remove()" class="bg-indra-cyan hover:bg-cyan-400 text-white font-bold px-8 py-3 rounded-xl transition-colors shadow-lg">Continuar aprendendo 🚀</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            launchConfetti(document.getElementById('confetti-container'));
+            modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+        }
+
+        function launchConfetti(container) {
+            if (!container) return;
+            const colors = ['#00A1C9','#6366F1','#F59E0B','#10B981','#EC4899','#EF4444'];
+            for (let i = 0; i < 60; i++) {
+                const piece = document.createElement('div');
+                piece.className = 'confetti-piece';
+                piece.style.cssText = `
+                    left: ${Math.random() * 100}%;
+                    top: -10px;
+                    background: ${colors[Math.floor(Math.random() * colors.length)]};
+                    width: ${6 + Math.random() * 8}px;
+                    height: ${6 + Math.random() * 8}px;
+                    border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
+                    animation-duration: ${1.5 + Math.random() * 2}s;
+                    animation-delay: ${Math.random() * 0.8}s;
+                `;
+                container.appendChild(piece);
+            }
+        }
+
+        function checkBadgeUnlocks(prevEarned) {
+            const nowEarned = getEarnedBadges();
+            const newBadges = nowEarned.filter(b => !prevEarned.some(p => p.id === b.id));
+            newBadges.forEach((b, i) => {
+                setTimeout(() => {
+                    const toast = document.createElement('div');
+                    toast.className = 'fixed bottom-6 right-6 z-50 px-5 py-4 rounded-2xl shadow-2xl flex items-center gap-4 border animate-fade-in-up slide-in-right bg-white border-indra-cyan/30';
+                    toast.innerHTML = `
+                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br ${b.color} flex items-center justify-center text-2xl shadow-md badge-pop">${b.icon}</div>
+                        <div>
+                            <p class="font-bold text-slate-800 text-sm">Badge Desbloqueada! 🏆</p>
+                            <p class="text-indra-cyan font-bold text-xs">${b.name}</p>
+                            <p class="text-slate-500 text-[10px]">${b.desc}</p>
+                        </div>
+                    `;
+                    document.body.appendChild(toast);
+                    setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity 0.5s'; setTimeout(() => toast.remove(), 500); }, 4000);
+                }, i * 700);
+            });
+            return newBadges.length > 0;
+        }
+
+        // Inicializa o catálogo de cursos
+        function initCoursesCatalog() {
+            renderFilters();
+            renderCourses();
+            updateGlobalXP();
+            updateTracksViewProgress();
+            renderGamification();
+        }
+
+        // Renderiza os filtros por categoria
+        function renderFilters() {
+            const categories = ['Todos', 'Tecnologia', 'Liderança', 'Metodologias', 'Soft Skills'];
+            const container = document.getElementById('category-filters');
+            if (!container) return;
+            
+            container.innerHTML = categories.map(cat => {
+                const isActive = cat === activeCategory;
+                return `
+                    <button onclick="selectCategory('${cat}')" class="category-pill border border-gray-200 px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${isActive ? 'active' : 'bg-slate-50 hover:bg-slate-100 text-slate-600'}" type="button">
+                        ${cat}
+                    </button>
+                `;
+            }).join('');
+        }
+
+        // Seleciona a categoria e filtra
+        function selectCategory(cat) {
+            activeCategory = cat;
+            renderFilters();
+            renderCourses();
+        }
+
+        // Filtra e renderiza os cards de cursos
+        function filterCourses() {
+            renderCourses();
+        }
+
+        // Renderiza a lista de cursos no Grid
+        function renderCourses() {
+            const grid = document.getElementById('courses-grid');
+            if (!grid) return;
+
+            const searchEl = document.getElementById('course-search');
+            const searchVal = searchEl ? searchEl.value.toLowerCase() : '';
+
+            const CATEGORY_COLORS = {
+                'Tecnologia':   { from: 'from-blue-900',   to: 'to-indigo-900',  accent: 'bg-blue-500/20 text-blue-200 border-blue-400/30' },
+                'Liderança':   { from: 'from-indra-navy', to: 'to-purple-900',  accent: 'bg-purple-500/20 text-purple-200 border-purple-400/30' },
+                'Metodologias': { from: 'from-emerald-900',to: 'to-teal-900',    accent: 'bg-emerald-500/20 text-emerald-200 border-emerald-400/30' },
+                'Soft Skills':  { from: 'from-rose-900',   to: 'to-pink-900',   accent: 'bg-rose-500/20 text-rose-200 border-rose-400/30' },
+                'default':      { from: 'from-slate-800',  to: 'to-slate-900',  accent: 'bg-slate-500/20 text-slate-200 border-slate-400/30' },
+            };
+
+            const filtered = COURSES_DATA.filter(course => {
+                const matchesCategory = activeCategory === 'Todos' || course.category === activeCategory;
+                const matchesSearch = course.title.toLowerCase().includes(searchVal) || course.description.toLowerCase().includes(searchVal);
+                return matchesCategory && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-16 text-slate-400">
+                        <i class="fas fa-search text-5xl mb-4 opacity-30"></i>
+                        <p class="text-base font-medium">Nenhum curso encontrado.</p>
+                        <p class="text-sm mt-1">Tente outro termo ou filtro.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(course => {
+                const totalLessons = getCourseTotalLessons(course);
+                const completedCount = getCourseCompletedLessonsCount(course);
+                const progressPct = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
+                const isStarted = progressPct > 0;
+                const isCompleted = progressPct === 100;
+                const colors = CATEGORY_COLORS[course.category] || CATEGORY_COLORS['default'];
+
+                let btnText = 'Iniciar Curso';
+                let btnClass = 'bg-white/10 hover:bg-white text-white hover:text-indra-navy border border-white/20';
+                if (isCompleted) { btnText = '✓ Revisitar'; btnClass = 'bg-emerald-500 hover:bg-emerald-400 text-white border-0'; }
+                else if (isStarted) { btnText = '▶ Continuar'; btnClass = 'bg-indra-cyan hover:bg-cyan-400 text-white border-0'; }
+
+                const xpBadge = course.xp ? `<span class="absolute top-4 right-4 bg-amber-400/90 backdrop-blur text-slate-900 text-[10px] font-black px-2 py-1 rounded-lg shadow">+${course.xp} XP</span>` : '';
+
+                return `
+                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col justify-between course-card group">
+                        <!-- Capa -->
+                        <div class="h-48 relative overflow-hidden bg-gradient-to-br ${colors.from} ${colors.to}">
+                            <img src="${course.cover}" class="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-40 group-hover:opacity-60 group-hover:scale-105 transition-all duration-700" alt="${course.title}">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+                            ${xpBadge}
+                            <span class="absolute top-4 left-4 ${colors.accent} border text-[10px] font-bold px-2.5 py-1 rounded-lg backdrop-blur-sm">
+                                <i class="fas fa-tag mr-1"></i>${course.category}
+                            </span>
+                            <div class="absolute bottom-0 left-0 right-0 p-4">
+                                <h3 class="font-bold text-white font-heading text-base leading-tight line-clamp-2 group-hover:text-indra-cyan transition-colors">${course.title}</h3>
+                                <p class="text-white/60 text-[11px] mt-1">Por ${course.instructor}</p>
+                            </div>
+                        </div>
+
+                        <!-- Corpo -->
+                        <div class="p-5 flex-1 flex flex-col justify-between">
+                            <p class="text-xs text-slate-500 line-clamp-2 mb-4 leading-relaxed">${course.description}</p>
+
+                            <!-- Progresso -->
+                            <div>
+                                <div class="flex justify-between items-center text-xs mb-1.5">
+                                    <span class="text-slate-500">${completedCount}/${totalLessons} aulas</span>
+                                    <span class="font-bold ${isCompleted ? 'text-emerald-500' : 'text-indra-cyan'}">${progressPct}%</span>
+                                </div>
+                                <div class="w-full bg-slate-100 rounded-full h-1.5 mb-4">
+                                    <div class="${isCompleted ? 'bg-emerald-500' : 'bg-gradient-to-r from-indra-navy to-indra-cyan'} h-1.5 rounded-full transition-all duration-500" style="width:${progressPct}%"></div>
+                                </div>
+                                <div class="flex items-center justify-between gap-3">
+                                    <span class="text-[10px] text-slate-400"><i class="far fa-clock mr-1"></i>${course.duration}</span>
+                                    <button onclick="openCoursePlayer('${course.id}')" class="flex-1 text-center py-2 rounded-lg font-bold text-xs transition-all shadow-sm ${btnClass}" type="button" style="background: ${isStarted && !isCompleted ? '' : ''}"> 
+                                        ${btnText}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function getCourseTotalLessons(course) {
+            let total = 0;
+            course.modules.forEach(mod => {
+                total += mod.lessons.length;
+            });
+            return total;
+        }
+
+        function getCourseCompletedLessonsCount(course) {
+            let count = 0;
+            course.modules.forEach(mod => {
+                mod.lessons.forEach(lesson => {
+                    if (completedLessonsSet.has(lesson.id)) {
+                        count++;
+                    }
+                });
+            });
+            return count;
+        }
+
+        function openCoursePlayer(courseId, lessonId = null) {
+            const activeViewEl = document.querySelector('.view-section.active');
+            if (activeViewEl) {
+                const curId = activeViewEl.id;
+                if (curId === 'view-tracks') referrerView = 'tracks';
+                else if (curId === 'view-courses') referrerView = 'courses';
+            }
+
+            activeCourse = COURSES_DATA.find(c => c.id === courseId);
+            if (!activeCourse) return;
+
+            let lessonToOpen = null;
+            if (lessonId) {
+                activeCourse.modules.forEach(mod => {
+                    const l = mod.lessons.find(less => less.id === lessonId);
+                    if (l) lessonToOpen = l;
+                });
+            }
+
+            if (!lessonToOpen) {
+                for (let mod of activeCourse.modules) {
+                    for (let l of mod.lessons) {
+                        if (!completedLessonsSet.has(l.id)) {
+                            lessonToOpen = l;
+                            break;
+                        }
+                    }
+                    if (lessonToOpen) break;
+                }
+            }
+
+            if (!lessonToOpen && activeCourse.modules.length > 0 && activeCourse.modules[0].lessons.length > 0) {
+                lessonToOpen = activeCourse.modules[0].lessons[0];
+            }
+
+            document.querySelectorAll('.view-section').forEach(el => {
+                el.classList.remove('active');
+                setTimeout(() => { if(!el.classList.contains('active')) el.style.display = 'none'; }, 400);
+            });
+            
+            setTimeout(() => {
+                const playerView = document.getElementById('view-player');
+                playerView.style.display = 'block';
+                setTimeout(() => playerView.classList.add('active'), 20);
+                document.getElementById('main-scroll-area').scrollTop = 0;
+            }, 300);
+
+            document.getElementById('player-course-title').textContent = activeCourse.title;
+            document.getElementById('player-course-desc').textContent = activeCourse.description;
+            
+            selectPlayerTab('desc');
+            loadLesson(lessonToOpen);
+        }
+
+        function backToCourses() {
+            resetVideoSimulator();
+            navigate(referrerView);
+            renderCourses();
+            updateTracksViewProgress();
+        }
+
+        function loadLesson(lesson) {
+            if (!lesson) return;
+            resetVideoSimulator();
+            
+            activeLesson = lesson;
+            document.getElementById('player-lesson-title').textContent = lesson.title;
+            
+            let modIndex = 1;
+            let lessonIndex = 1;
+            activeCourse.modules.forEach((mod, idx) => {
+                const lIdx = mod.lessons.findIndex(l => l.id === lesson.id);
+                if (lIdx !== -1) {
+                    modIndex = idx + 1;
+                    lessonIndex = lIdx + 1;
+                }
+            });
+            document.getElementById('video-lesson-tag').textContent = `Módulo ${modIndex} • Aula ${lessonIndex}`;
+            
+            const isCompleted = completedLessonsSet.has(lesson.id);
+            const btnComplete = document.getElementById('btn-complete-lesson');
+            const btnIcon = document.getElementById('btn-complete-icon');
+            const btnText = document.getElementById('btn-complete-text');
+            
+            if (isCompleted) {
+                btnComplete.className = "bg-emerald-50 text-emerald-600 border border-emerald-300 px-5 py-2.5 rounded-lg font-bold transition-all flex items-center gap-2";
+                btnIcon.className = "fas fa-check-circle text-lg";
+                btnText.textContent = "Aula Concluída";
+            } else {
+                btnComplete.className = "bg-indigo-50 hover:bg-emerald-50 text-indigo-600 hover:text-emerald-600 border border-indigo-200 hover:border-emerald-300 px-5 py-2.5 rounded-lg font-bold transition-all flex items-center gap-2";
+                btnIcon.className = "far fa-check-circle text-lg";
+                btnText.textContent = "Marcar como Concluído";
+            }
+
+            renderPlayerAccordion();
+            updatePlayerCourseProgress();
+            renderComments();
+            renderQuiz();
+        }
+
+        function renderPlayerAccordion() {
+            const accordion = document.getElementById('player-modules-accordion');
+            if (!accordion) return;
+
+            accordion.innerHTML = activeCourse.modules.map((mod, modIdx) => {
+                const isOpen = mod.lessons.some(l => l.id === activeLesson.id);
+                
+                const lessonsHtml = mod.lessons.map(l => {
+                    const isCompleted = completedLessonsSet.has(l.id);
+                    const isActive = l.id === activeLesson.id;
+                    
+                    let statusClass = '';
+                    let iconHtml = '<i class="far fa-play-circle text-slate-400 text-sm"></i>';
+                    
+                    if (isCompleted) {
+                        statusClass = 'lesson-row-item active';
+                        iconHtml = '<i class="fas fa-check-circle text-emerald-500 text-sm"></i>';
+                    } else if (isActive) {
+                        statusClass = 'lesson-row-item current';
+                        iconHtml = '<i class="fas fa-play-circle text-indra-cyan text-sm animate-pulse"></i>';
+                    } else {
+                        statusClass = 'lesson-row-item hover:bg-slate-50 cursor-pointer';
+                    }
+                    
+                    let typeIcon = 'fa-video';
+                    if (l.type === 'podcast') typeIcon = 'fa-podcast';
+                    else if (l.type === 'artigo') typeIcon = 'fa-file-alt';
+                    else if (l.type === 'interativo') typeIcon = 'fa-laptop-code';
+                    else if (l.type === 'simulador') typeIcon = 'fa-gamepad';
+                    else if (l.type === 'pilula') typeIcon = 'fa-lightbulb';
+                    
+                    return `
+                        <div onclick="selectLesson('${l.id}')" class="p-3 pl-8 flex items-center justify-between text-xs transition-all border-b border-gray-50 ${statusClass}">
+                            <div class="flex items-center gap-2.5 min-w-0">
+                                ${iconHtml}
+                                <span class="truncate font-medium">${l.title}</span>
+                            </div>
+                            <span class="text-[10px] text-slate-400 shrink-0 ml-2"><i class="fas ${typeIcon} mr-1"></i>${l.duration}</span>
+                        </div>
+                    `;
+                }).join('');
+
+                return `
+                    <div class="bg-white">
+                        <div class="p-4 flex justify-between items-center cursor-pointer hover:bg-slate-50 border-b border-gray-100" onclick="togglePlayerModuleAccordion(${modIdx})">
+                            <span class="text-xs font-bold text-slate-700 truncate mr-2">${mod.title}</span>
+                            <i class="fas fa-chevron-down text-slate-400 text-xs transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}" id="player-arrow-${modIdx}"></i>
+                        </div>
+                        <div id="player-mod-content-${modIdx}" class="overflow-hidden transition-all duration-300" style="max-height: ${isOpen ? '500px' : '0px'}">
+                            ${lessonsHtml}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function selectLesson(lessonId) {
+            let selected = null;
+            activeCourse.modules.forEach(mod => {
+                const l = mod.lessons.find(less => less.id === lessonId);
+                if (l) selected = l;
+            });
+            if (selected) loadLesson(selected);
+        }
+
+        function togglePlayerModuleAccordion(index) {
+            const content = document.getElementById(`player-mod-content-${index}`);
+            const arrow = document.getElementById(`player-arrow-${index}`);
+            if (!content) return;
+            
+            if (content.style.maxHeight === '0px' || !content.style.maxHeight) {
+                content.style.maxHeight = '500px';
+                arrow.classList.add('rotate-180');
+            } else {
+                content.style.maxHeight = '0px';
+                arrow.classList.remove('rotate-180');
+            }
+        }
+
+        function updatePlayerCourseProgress() {
+            const total = getCourseTotalLessons(activeCourse);
+            const completed = getCourseCompletedLessonsCount(activeCourse);
+            const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+            
+            document.getElementById('player-course-progress-percent').textContent = `${pct}%`;
+            document.getElementById('player-course-progress-bar').style.width = `${pct}%`;
+        }
+
+        function selectPlayerTab(tabName) {
+            activePlayerTab = tabName;
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelectorAll('.player-tab-pane').forEach(pane => {
+                pane.classList.add('hidden');
+            });
+            
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+            document.getElementById(`pane-${tabName}`).classList.remove('hidden');
+        }
+
+        function completeActiveLesson() {
+            if (!activeLesson) return;
+
+            const prevEarned = getEarnedBadges();
+            const prevLevel = getCurrentLevel();
+            const isCompleted = completedLessonsSet.has(activeLesson.id);
+            const btnComplete = document.getElementById('btn-complete-lesson');
+            const btnIcon = document.getElementById('btn-complete-icon');
+            const btnText = document.getElementById('btn-complete-text');
+
+            if (isCompleted) {
+                completedLessonsSet.delete(activeLesson.id);
+                userXP = Math.max(0, userXP - XP_PER_LESSON);
+                btnComplete.className = 'bg-indigo-50 hover:bg-emerald-50 text-indigo-600 hover:text-emerald-600 border border-indigo-200 hover:border-emerald-300 px-5 py-2.5 rounded-lg font-bold transition-all flex items-center gap-2';
+                btnIcon.className = 'far fa-check-circle text-lg';
+                btnText.textContent = 'Marcar como Concluído';
+                showToast('Aula desmarcada. XP atualizado.', 'info');
+            } else {
+                completedLessonsSet.add(activeLesson.id);
+                userXP += XP_PER_LESSON;
+                btnComplete.className = 'bg-emerald-50 text-emerald-600 border border-emerald-300 px-5 py-2.5 rounded-lg font-bold transition-all flex items-center gap-2';
+                btnIcon.className = 'fas fa-check-circle text-lg';
+                btnText.textContent = 'Aula Concluída';
+                showToast(`+${XP_PER_LESSON} XP! Aula concluída! 🎉`, 'success');
+
+                // Check level up
+                const newLevel = getCurrentLevel();
+                if (newLevel.level > prevLevel.level) {
+                    setTimeout(() => triggerLevelUp(newLevel), 1200);
+                }
+
+                // Check badge unlocks
+                setTimeout(() => checkBadgeUnlocks(prevEarned), 600);
+            }
+
+            updateGlobalXP();
+            updatePlayerCourseProgress();
+            renderPlayerAccordion();
+        }
+
+        function showToast(message, type = "success") {
+            const existing = document.getElementById('floating-toast');
+            if (existing) existing.remove();
+
+            const toast = document.createElement('div');
+            toast.id = 'floating-toast';
+            toast.className = `fixed bottom-6 right-6 z-50 px-5 py-3.5 rounded-xl shadow-2xl flex items-center gap-3 border animate-fade-in-up text-white ${type === 'success' ? 'bg-emerald-600 border-emerald-500' : 'bg-slate-800 border-slate-700'}`;
+            
+            const iconHtml = type === 'success' ? '<i class="fas fa-trophy text-amber-300 text-lg"></i>' : '<i class="fas fa-info-circle text-indigo-300 text-lg"></i>';
+            toast.innerHTML = `
+                ${iconHtml}
+                <span class="text-sm font-semibold">${message}</span>
+            `;
+            
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+                setTimeout(() => toast.remove(), 500);
+            }, 3000);
+        }
+
+        function updateGlobalXP() {
+            // Sidebar nav XP
+            const xpTextSidebar = document.querySelector('.p-6.border-t .font-bold.text-indra-cyan');
+            if (xpTextSidebar) xpTextSidebar.textContent = `${userXP.toLocaleString('pt-BR')} XP`;
+
+            const sidebarProgressBar = document.querySelector('.p-6.border-t .w-full.bg-gray-200 .bg-gradient-to-r');
+            if (sidebarProgressBar) {
+                const deltaXP = userXP - originalXP;
+                const newPct = Math.min(75 + (deltaXP / 100) * 2.5, 100);
+                sidebarProgressBar.style.width = `${newPct}%`;
+            }
+
+            // Stats completed courses
+            const statsCompleted = document.getElementById('stats-completed');
+            if (statsCompleted) {
+                let count = 0;
+                COURSES_DATA.forEach(c => { if (getCourseTotalLessons(c) > 0 && getCourseTotalLessons(c) === getCourseCompletedLessonsCount(c)) count++; });
+                statsCompleted.textContent = `${count} ${count === 1 ? 'curso' : 'cursos'}`;
+            }
+
+            // Gamification full render
+            renderGamification();
+        }
+
+        function updateTracksViewProgress() {
+            const courseId = 'lideranca-indra';
+            const course = COURSES_DATA.find(c => c.id === courseId);
+            if (!course) return;
+            
+            const total = getCourseTotalLessons(course);
+            const completed = getCourseCompletedLessonsCount(course);
+            const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+            const progressBoxPctText = document.querySelector('#view-tracks .text-3xl.font-bold.text-indra-navy');
+            if (progressBoxPctText) progressBoxPctText.textContent = `${pct}%`;
+
+            const progressBoxProgressBar = document.querySelector('#view-tracks .w-full.bg-slate-100 .bg-indra-cyan');
+            if (progressBoxProgressBar) progressBoxProgressBar.style.width = `${pct}%`;
+
+            course.modules.forEach(mod => {
+                mod.lessons.forEach(l => {
+                    const isCompleted = completedLessonsSet.has(l.id);
+                    const lessonDivs = document.querySelectorAll(`[onclick*="openCoursePlayer('${courseId}', '${l.id}')"]`);
+                    lessonDivs.forEach(div => {
+                        const icon = div.querySelector('i');
+                        const textSpan = div.querySelector('span');
+                        if (icon) {
+                            if (isCompleted) {
+                                icon.className = "fas fa-check-circle text-emerald-500 text-lg";
+                                if (textSpan) textSpan.className = "text-sm text-slate-500 line-through";
+                            } else {
+                                const isCurrent = l.isCurrent;
+                                if (isCurrent) {
+                                    icon.className = "far fa-play-circle text-slate-300 text-lg play-icon";
+                                    if (textSpan) textSpan.className = "text-sm font-semibold text-indra-navy";
+                                } else {
+                                    icon.className = "far fa-play-circle text-slate-300 text-lg play-icon";
+                                    if (textSpan) textSpan.className = "text-sm text-slate-600";
+                                }
+                            }
+                        }
+                    });
+                });
+            });
+        }
+
+        // ================= SIMULADOR DE PLAYER DE VÍDEO =================
+        function toggleVideoPlayback() {
+            const statusText = document.getElementById('video-status-text');
+            const playIcon = document.getElementById('video-play-icon');
+            const ctrlPlayIcon = document.getElementById('video-control-play-icon');
+            
+            if (videoPlaying) {
+                videoPlaying = false;
+                clearInterval(videoPlaybackInterval);
+                statusText.textContent = "Vídeo Pausado. Clique para retomar.";
+                playIcon.className = "fas fa-play text-3xl ml-1";
+                ctrlPlayIcon.className = "fas fa-play";
+            } else {
+                videoPlaying = true;
+                playIcon.className = "fas fa-pause text-3xl";
+                ctrlPlayIcon.className = "fas fa-pause";
+                statusText.textContent = "Reproduzindo aula...";
+                
+                videoPlaybackInterval = setInterval(() => {
+                    if (videoProgress < 100) {
+                        videoProgress += 0.5 * videoSpeed;
+                        if (videoProgress > 100) videoProgress = 100;
+                        
+                        document.getElementById('video-progress-bar').style.width = `${videoProgress}%`;
+                        
+                        const totalSec = 600; 
+                        const currentSec = Math.round((videoProgress / 100) * totalSec);
+                        document.getElementById('video-time-indicator').textContent = `${formatTime(currentSec)} / ${formatTime(totalSec)}`;
+                        
+                        if (videoProgress === 100) {
+                            videoPlaying = false;
+                            clearInterval(videoPlaybackInterval);
+                            statusText.textContent = "Vídeo concluído!";
+                            playIcon.className = "fas fa-redo text-3xl";
+                            ctrlPlayIcon.className = "fas fa-play";
+                            
+                            if (!completedLessonsSet.has(activeLesson.id)) {
+                                completeActiveLesson();
+                            }
+                        }
+                    }
+                }, 100);
+            }
+        }
+
+        function seekVideo(event) {
+            const bar = event.currentTarget;
+            const rect = bar.getBoundingClientRect();
+            const clickX = event.clientX - rect.left;
+            const pct = Math.round((clickX / rect.width) * 100);
+            
+            videoProgress = pct;
+            document.getElementById('video-progress-bar').style.width = `${videoProgress}%`;
+            
+            const totalSec = 600;
+            const currentSec = Math.round((videoProgress / 100) * totalSec);
+            document.getElementById('video-time-indicator').textContent = `${formatTime(currentSec)} / ${formatTime(totalSec)}`;
+            
+            if (videoPlaying) {
+                videoPlaying = false;
+                toggleVideoPlayback();
+            }
+        }
+
+        function changeVideoSpeed() {
+            const speeds = [1.0, 1.25, 1.5, 2.0];
+            let currentIdx = speeds.indexOf(videoSpeed);
+            let nextIdx = (currentIdx + 1) % speeds.length;
+            videoSpeed = speeds[nextIdx];
+            document.getElementById('video-speed-btn').textContent = `${videoSpeed.toFixed(2)}x`;
+        }
+
+        function toggleMuteVideo() {
+            const icon = document.getElementById('video-volume-icon');
+            if (videoMuted) {
+                videoMuted = false;
+                icon.className = "fas fa-volume-up";
+            } else {
+                videoMuted = true;
+                icon.className = "fas fa-volume-mute";
+            }
+        }
+
+        function formatTime(seconds) {
+            const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+            const s = (seconds % 60).toString().padStart(2, '0');
+            return `${m}:${s}`;
+        }
+
+        function resetVideoSimulator() {
+            videoPlaying = false;
+            clearInterval(videoPlaybackInterval);
+            videoProgress = 0;
+            videoSpeed = 1.0;
+            videoMuted = false;
+            
+            const statusText = document.getElementById('video-status-text');
+            const playIcon = document.getElementById('video-play-icon');
+            const ctrlPlayIcon = document.getElementById('video-control-play-icon');
+            const progress = document.getElementById('video-progress-bar');
+            const speed = document.getElementById('video-speed-btn');
+            const vol = document.getElementById('video-volume-icon');
+            
+            if (statusText) statusText.textContent = "Vídeo Pausado. Clique para iniciar.";
+            if (playIcon) playIcon.className = "fas fa-play text-3xl ml-1";
+            if (ctrlPlayIcon) ctrlPlayIcon.className = "fas fa-play";
+            if (progress) progress.style.width = "0%";
+            if (speed) speed.textContent = "1.0x";
+            if (vol) vol.className = "fas fa-volume-up";
+            if (document.getElementById('video-time-indicator')) {
+                document.getElementById('video-time-indicator').textContent = "00:00 / 10:00";
+            }
+        }
+
+        // ================= ABA: COMENTÁRIOS / FÓRUM DÚVIDAS =================
+        function renderComments() {
+            const list = document.getElementById('comments-list-container');
+            const countSpan = document.getElementById('comments-count');
+            if (!list) return;
+
+            const lessonComments = COMMENTS_DB[activeLesson.id] || [];
+            countSpan.textContent = lessonComments.length;
+
+            if (lessonComments.length === 0) {
+                list.innerHTML = `
+                    <div class="text-center py-6 text-slate-400">
+                        <i class="far fa-comments text-3xl mb-2"></i>
+                        <p class="text-xs">Nenhum comentário nesta aula ainda. Seja o primeiro a perguntar!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = lessonComments.map(c => `
+                <div class="py-4 flex gap-4 animate-fade-in-up border-b border-gray-50 last:border-0">
+                    <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(c.author)}&background=${c.author === 'Jane Doe' ? '002B49' : '00A1C9'}&color=fff" class="w-10 h-10 rounded-full border shadow-sm mt-1 shrink-0" alt="${c.author}">
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="font-bold text-slate-800 text-sm">${c.author}</span>
+                            <span class="bg-indigo-50 text-indigo-600 text-[9px] font-bold px-1.5 py-0.5 rounded-full">${c.role}</span>
+                            <span class="text-slate-400 text-[10px] ml-2">${c.date}</span>
+                        </div>
+                        <p class="text-sm text-slate-600 leading-relaxed">${c.text}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function postNewComment() {
+            const input = document.getElementById('comment-input');
+            const text = input.value.trim();
+            if (!text) return;
+
+            if (!COMMENTS_DB[activeLesson.id]) {
+                COMMENTS_DB[activeLesson.id] = [];
+            }
+
+            COMMENTS_DB[activeLesson.id].push({
+                author: 'Jane Doe',
+                role: 'Gestora • Você',
+                text: text,
+                date: 'Agora mesmo'
+            });
+
+            input.value = '';
+            renderComments();
+            showToast("Comentário publicado no fórum!", "success");
+        }
+
+        // ================= ABA: QUIZ INTERATIVO =================
+        let activeQuizSelectedIdx = null;
+
+        function renderQuiz() {
+            const unsolvedPane = document.getElementById('quiz-unsolved');
+            const resultPane = document.getElementById('quiz-result');
+            const badge = document.getElementById('quiz-badge');
+            
+            if (!unsolvedPane || !resultPane) return;
+            
+            unsolvedPane.classList.remove('hidden');
+            resultPane.classList.add('hidden');
+            activeQuizSelectedIdx = null;
+
+            if (!activeLesson.quiz) {
+                if (badge) badge.classList.add('hidden');
+                unsolvedPane.innerHTML = `
+                    <div class="text-center py-6 text-slate-400">
+                        <i class="fas fa-info-circle text-3xl mb-2"></i>
+                        <p class="text-sm">Esta aula não possui um questionário de fixação rápida.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            if (badge) badge.classList.remove('hidden');
+            
+            unsolvedPane.innerHTML = `
+                <span class="text-xs font-bold text-amber-600 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-full uppercase tracking-wider">Desafio de Fixação</span>
+                <h4 class="font-bold text-slate-800 text-lg mt-3 mb-4" id="quiz-question-text">${activeLesson.quiz.question}</h4>
+                <div class="space-y-3" id="quiz-options-container"></div>
+                <div class="mt-6 flex justify-end">
+                    <button onclick="submitQuizAnswer()" class="bg-indra-navy hover:bg-indra-cyan text-white px-6 py-2.5 rounded-lg font-bold transition-colors shadow-md" type="button">
+                        Enviar Resposta
+                    </button>
+                </div>
+            `;
+
+            const container = document.getElementById('quiz-options-container');
+            if (container) {
+                container.innerHTML = activeLesson.quiz.options.map((opt, idx) => `
+                    <label class="cursor-pointer block">
+                        <input type="radio" name="quiz-opt" value="${idx}" class="peer sr-only" onchange="selectQuizOption(${idx})">
+                        <div class="p-4 border border-gray-200 rounded-xl hover:border-indra-cyan/40 peer-checked:border-indra-cyan peer-checked:bg-indra-accent/20 transition-all flex gap-3 text-sm text-slate-600 font-medium">
+                            <span class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-400 peer-checked:bg-indra-cyan peer-checked:text-white shrink-0 uppercase">${String.fromCharCode(65 + idx)}</span>
+                            <span class="pt-0.5">${opt}</span>
+                        </div>
+                    </label>
+                `).join('');
+            }
+        }
+
+        function selectQuizOption(index) {
+            activeQuizSelectedIdx = index;
+        }
+
+        function submitQuizAnswer() {
+            if (activeQuizSelectedIdx === null) {
+                alert('Por favor, selecione uma opção de resposta antes de enviar.');
+                return;
+            }
+
+            const quiz = activeLesson.quiz;
+            const isCorrect = activeQuizSelectedIdx === quiz.correctIndex;
+            
+            const unsolvedPane = document.getElementById('quiz-unsolved');
+            const resultPane = document.getElementById('quiz-result');
+            const resultIconContainer = document.getElementById('quiz-result-icon-container');
+            const resultIcon = document.getElementById('quiz-result-icon');
+            const resultTitle = document.getElementById('quiz-result-title');
+            const resultMsg = document.getElementById('quiz-result-message');
+            
+            unsolvedPane.classList.add('hidden');
+            resultPane.classList.remove('hidden');
+
+            if (isCorrect) {
+                correctQuizzes++;
+                resultIconContainer.className = 'w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-4';
+                resultIcon.className = 'fas fa-check';
+                resultTitle.className = 'text-xl font-bold text-emerald-600 mb-2';
+                resultTitle.textContent = 'Resposta Correta! 🎯';
+                resultMsg.textContent = quiz.feedbackCorrect;
+
+                if (!completedLessonsSet.has(activeLesson.id)) {
+                    showToast('Quiz correto! +100 XP de bônus! 🏆', 'success');
+                    completeActiveLesson();
+                } else {
+                    showToast('Quiz correto! Muito bem! 🎉', 'success');
+                }
+                renderGamification();
+            } else {
+                resultIconContainer.className = "w-16 h-16 rounded-full bg-red-100 text-red-500 flex items-center justify-center mx-auto mb-4";
+                resultIcon.className = "fas fa-times";
+                resultTitle.className = "text-xl font-bold text-red-500 mb-2";
+                resultTitle.textContent = "Resposta Incorreta";
+                resultMsg.textContent = quiz.feedbackIncorrect;
+            }
+        }
+
+        function resetQuiz() {
+            renderQuiz();
+        }
+    </script>
+</body>
+</html>
